@@ -81,10 +81,11 @@ function getTechIcon(tech) {
     'jupyter notebook': { icon: SiJupyter, color: 'text-orange-700' },
     'jupyter': { icon: SiJupyter, color: 'text-orange-700' },
     'c': { icon: SiC, color: 'text-blue-700' },
-    'langchain': { icon: FaBrain, color: 'text-purple-600' },
-    'chromadb': { icon: FaDatabase, color: 'text-green-600' },
+    'langchain': { icon: null, color: 'text-purple-600', image: '/langgraph-color.svg' },
+    'chromadb': { icon: null, color: 'text-green-600', image: '/chroma.png' },
     'xgboost': { icon: FaCloud, color: 'text-indigo-600' },
-    'rest': { icon: FaCode, color: 'text-gray-600' },
+    'rest': { icon: null, color: 'text-gray-600', image: '/rest.png' },
+    'rag': { icon: null, color: 'text-blue-600', image: '/rag.png' },
     'other': { icon: FaCode, color: 'text-gray-500' }
   };
   
@@ -182,22 +183,33 @@ function ProjectCard({ title, description, tech, meta, githubUrl, liveUrl }) {
 
           <div className="mt-4 flex flex-wrap gap-3">
             {tech.slice(0, 6).map((t) => {
-              const { icon: Icon, color } = getTechIcon(t);
+              const iconData = getTechIcon(t);
+              const { icon: Icon, color } = iconData;
               return (
                 <div
                   key={t}
                   className="relative flex items-center justify-center p-2.5"
                   // style={{ boxShadow: `0 0 0 1px ${accent}10 inset` }}
                 >
-                  {Icon && (
+                  {(Icon || iconData.image) && (
                     <div className="relative">
-                      <Icon
-                        className={`h-6 w-6 ${color} transition-transform hover:scale-110 cursor-pointer`}
-                        onMouseEnter={() => setHoveredTech(t)}
-                        onMouseLeave={() => setHoveredTech(null)}
-                      />
+                      {iconData.image ? (
+                        <img
+                          src={iconData.image}
+                          alt={t}
+                          className={`h-8 w-8 transition-transform hover:scale-110 cursor-pointer`}
+                          onMouseEnter={() => setHoveredTech(t)}
+                          onMouseLeave={() => setHoveredTech(null)}
+                        />
+                      ) : (
+                        <Icon
+                          className={`h-8 w-8 ${color} transition-transform hover:scale-110 cursor-pointer`}
+                          onMouseEnter={() => setHoveredTech(t)}
+                          onMouseLeave={() => setHoveredTech(null)}
+                        />
+                      )}
                       {hoveredTech === t && (
-                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-neutral-900 px-2 py-1 text-xs text-white whitespace-nowrap z-50 pointer-events-none">
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-neutral-900 px-2 py-1 text-xs font-bold text-white whitespace-nowrap z-50 pointer-events-none">
                           {t}
                           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-neutral-900 rotate-45" />
                         </div>
