@@ -3,6 +3,7 @@ export const NAV_LINKS = [
   'Home',
   'Education',
   'Experience',
+  'Agent',
   'Projects',
   'Contact',
 ]

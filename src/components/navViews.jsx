@@ -3,6 +3,7 @@ import { lazy } from 'react'
 const EducationContent = lazy(() => import('./EducationContent'))
 const ExperienceContent = lazy(() => import('./ExperienceContent'))
 const HomeContent = lazy(() => import('./HomeContent'))
+const AgentContent = lazy(() => import('./AgentContent'))
 const ProjectsContent = lazy(() => import('./ProjectsContent'))
 const ContactContent = lazy(() => import('./ContactContent'))
 
@@ -14,6 +15,9 @@ export const preloadComponent = (componentName) => {
       break
     case 'Experience':
       import('./ExperienceContent')
+      break
+    case 'Agent':
+      import('./AgentContent')
       break
     case 'Projects':
       import('./ProjectsContent')
@@ -31,6 +35,7 @@ export const NAV_VIEWS = {
   Home: HomeContent,
   Education: EducationContent,
   Experience: ExperienceContent,
+  Agent: AgentContent,
   Projects: ProjectsContent,
   Contact: ContactContent,
 }
