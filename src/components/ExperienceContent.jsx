@@ -13,7 +13,7 @@ function ExperienceHeroArt() {
     >
       <div className="relative aspect-square w-full max-w-[min(100%,420px)] rounded-3xl border border-neutral-200/90 bg-linear-to-br from-amber-50 via-white to-sky-50 shadow-[0_20px_50px_-20px_rgba(52,152,219,0.2)] dark:border-neutral-700 dark:from-amber-950/20 dark:via-neutral-900 dark:to-sky-950/20 overflow-hidden">
         <video
-          src="/src/assets/At the office.mp4"
+          src="/office.mp4"
           autoPlay
           loop
           muted

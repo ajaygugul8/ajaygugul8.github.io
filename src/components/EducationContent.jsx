@@ -224,7 +224,7 @@ export default function EducationContent() {
             <div className="flex-1 flex items-center justify-center" aria-hidden>
               <div className="relative aspect-square w-full max-w-[320px] overflow-hidden rounded-3xl border border-neutral-200/90 bg-gradient-to-br from-amber-50 via-white to-sky-50 shadow-[0_20px_50px_-20px_rgba(52,152,219,0.2)] dark:border-neutral-700 dark:from-amber-950/20 dark:via-neutral-900 dark:to-sky-950/20">
                 <video
-                  src="/src/assets/edu.mp4"
+                  src="/edu.mp4"
                   autoPlay
                   loop
                   muted

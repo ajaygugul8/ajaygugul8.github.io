@@ -62,7 +62,7 @@ function IllustrationGenAI() {
       aria-hidden
     >
       <video
-        src="/src/assets/Code typing.mp4"
+        src="/coding.mp4"
         autoPlay
         loop
         muted
