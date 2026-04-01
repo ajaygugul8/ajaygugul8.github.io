@@ -1,8 +1,28 @@
 import { ExternalLink, Github, ChevronDown, ChevronUp } from 'lucide-react'
 import Magnet from './Magnet'
-import BorderGlow from './BorderGlow'
 import { useState, useEffect } from 'react'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import {
+  SiReact,
+  SiVite,
+  SiJavascript,
+  SiNodedotjs,
+  SiMongodb,
+  SiTypescript,
+  SiTailwindcss,
+  SiFirebase,
+  SiPython,
+  SiFastapi,
+  SiHtml5,
+  SiJupyter,
+  SiC
+} from 'react-icons/si';
+import { 
+  FaDatabase,
+  FaBrain,
+  FaCloud,
+  FaCode
+} from 'react-icons/fa';
 
 const PAGE_SIZE = 4
 
@@ -41,9 +61,40 @@ function pickAccent(title) {
   return ACCENTS[hashString(title) % ACCENTS.length]
 }
 
+function getTechIcon(tech) {
+  const techLower = tech.toLowerCase();
+  const iconMap = {
+    'react': { icon: SiReact, color: 'text-cyan-500' },
+    'vite': { icon: SiVite, color: 'text-purple-500' },
+    'javascript': { icon: SiJavascript, color: 'text-yellow-500' },
+    'node.js': { icon: SiNodedotjs, color: 'text-green-600' },
+    'node': { icon: SiNodedotjs, color: 'text-green-600' },
+    'mongodb': { icon: SiMongodb, color: 'text-green-500' },
+    'typescript': { icon: SiTypescript, color: 'text-blue-600' },
+    'tailwind css': { icon: SiTailwindcss, color: 'text-cyan-600' },
+    'tailwindcss': { icon: SiTailwindcss, color: 'text-cyan-600' },
+    'firebase': { icon: SiFirebase, color: 'text-orange-500' },
+    'python': { icon: SiPython, color: 'text-blue-500' },
+    'fastapi': { icon: SiFastapi, color: 'text-teal-600' },
+    'html': { icon: SiHtml5, color: 'text-orange-600' },
+    'html5': { icon: SiHtml5, color: 'text-orange-600' },
+    'jupyter notebook': { icon: SiJupyter, color: 'text-orange-700' },
+    'jupyter': { icon: SiJupyter, color: 'text-orange-700' },
+    'c': { icon: SiC, color: 'text-blue-700' },
+    'langchain': { icon: FaBrain, color: 'text-purple-600' },
+    'chromadb': { icon: FaDatabase, color: 'text-green-600' },
+    'xgboost': { icon: FaCloud, color: 'text-indigo-600' },
+    'rest': { icon: FaCode, color: 'text-gray-600' },
+    'other': { icon: FaCode, color: 'text-gray-500' }
+  };
+  
+  return iconMap[techLower] || { icon: FaCode, color: 'text-gray-500' };
+}
+
 function ProjectCard({ title, description, tech, meta, githubUrl, liveUrl }) {
   const accent = pickAccent(title)
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [hoveredTech, setHoveredTech] = useState(null)
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -63,20 +114,7 @@ function ProjectCard({ title, description, tech, meta, githubUrl, liveUrl }) {
   }
 
   return (
-    <BorderGlow
-      edgeSensitivity={35}
-      glowColor="40 80 80"
-      backgroundColor="transparent"
-      borderRadius={16}
-      glowRadius={20}
-      glowIntensity={0.4}
-      coneSpread={30}
-      animated={false}
-      colors={['#c084fc', '#f472b6', '#38bdf8']}
-      isDarkMode={isDarkMode}
-      className="group"
-    >
-      <article className="relative flex min-h-[260px] flex-col overflow-hidden rounded-2xl bg-white transition-transform hover:-translate-y-1 dark:bg-neutral-950/40">
+    <article className="group relative flex min-h-[260px] flex-col overflow-hidden rounded-2xl bg-white transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] dark:bg-neutral-950/40">
 
         {/* GitHub + Live — absolute top right, side by side */}
         <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5">
@@ -108,11 +146,23 @@ function ProjectCard({ title, description, tech, meta, githubUrl, liveUrl }) {
 
         {/* Title + meta — right padding so text never goes under the buttons */}
         <div className="p-5 pb-3 pr-36">
-          <h3 className="text-[15px] font-bold leading-tight tracking-tight text-[#1a1a1a] dark:text-neutral-50">
-            {title}
+          <h3 className="text-[15px] font-bold leading-tight tracking-tight text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors cursor-pointer">
+            {githubUrl ? (
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+                aria-label={`Open ${title} on GitHub`}
+              >
+                {title}
+              </a>
+            ) : (
+              title
+            )}
           </h3>
           {meta ? (
-            <p className="mt-1 text-xs font-semibold text-[#555] dark:text-neutral-300">{meta}</p>
+            <p className="mt-1 text-xs font-semibold text-amber-600 dark:text-amber-500">{meta}</p>
           ) : null}
         </div>
 
@@ -130,20 +180,36 @@ function ProjectCard({ title, description, tech, meta, githubUrl, liveUrl }) {
             aria-hidden
           />
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {tech.slice(0, 6).map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-neutral-200/70 bg-white/70 px-2 py-1 text-[11px] font-semibold text-[#333] dark:border-neutral-700/70 dark:bg-neutral-950/30 dark:text-neutral-100"
-                style={{ boxShadow: `0 0 0 1px ${accent}10 inset` }}
-              >
-                {t}
-              </span>
-            ))}
+          <div className="mt-4 flex flex-wrap gap-3">
+            {tech.slice(0, 6).map((t) => {
+              const { icon: Icon, color } = getTechIcon(t);
+              return (
+                <div
+                  key={t}
+                  className="relative flex items-center justify-center p-2.5"
+                  // style={{ boxShadow: `0 0 0 1px ${accent}10 inset` }}
+                >
+                  {Icon && (
+                    <div className="relative">
+                      <Icon
+                        className={`h-6 w-6 ${color} transition-transform hover:scale-110 cursor-pointer`}
+                        onMouseEnter={() => setHoveredTech(t)}
+                        onMouseLeave={() => setHoveredTech(null)}
+                      />
+                      {hoveredTech === t && (
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-neutral-900 px-2 py-1 text-xs text-white whitespace-nowrap z-50 pointer-events-none">
+                          {t}
+                          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-neutral-900 rotate-45" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </article>
-    </BorderGlow>
   )
 }
 
