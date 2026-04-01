@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import AnimationStage from './AnimationStage'
 
-export const PORTFOLIO_ONBOARDING_KEY = 'portfolio-onboarding-complete'
+import { PORTFOLIO_ONBOARDING_KEY } from './onboardingKey'
+export { PORTFOLIO_ONBOARDING_KEY }
 
 const GREETINGS = [
   { lang: 'English', text: 'Hello' },

@@ -75,7 +75,7 @@ function TiltDegreeCard({
           <div className="flex shrink-0 justify-center lg:w-[168px]">
             <div className="flex h-28 w-28 items-center justify-center rounded-full border-[5px] border-[#6096BA] bg-white shadow-inner dark:border-sky-500 dark:bg-neutral-900 sm:h-32 sm:w-32">
               <img
-                src="/src/assets/iit_logo.png"
+                src="/iit_logo.png"
                 alt="IIT Delhi"
                 className="h-16 w-16 object-contain sm:h-20 sm:w-20"
               />

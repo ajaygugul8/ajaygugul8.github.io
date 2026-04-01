@@ -46,7 +46,7 @@ export default function ContactContent() {
                 {/* Avatar Background */}
                 <div className="absolute inset-0">
                   <img
-                    src="/src/assets/aj.png"
+                    src="/aj.png"
                     alt="Ajay Guguloth"
                     className="w-full h-full object-cover object-top"
                     style={{ mixBlendMode: 'normal', opacity: 1 }}

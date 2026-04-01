@@ -3,7 +3,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import { NAV_VIEWS } from './components/navViews'
 const WelcomeFlow = lazy(() => import('./components/WelcomeFlow'))
-import { PORTFOLIO_ONBOARDING_KEY } from './components/WelcomeFlow'
+import { PORTFOLIO_ONBOARDING_KEY } from './components/onboardingKey'
 
 function LoadingSpinner() {
   return (

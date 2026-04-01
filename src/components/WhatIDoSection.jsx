@@ -47,7 +47,7 @@ function Panel({ title, techs, bullets }) {
 function IllustrationFullStack() {
   return (
     <img
-      src="/src/assets/1.gif"
+      src="/1.gif"
       alt="Full Stack Development animation"
       className="w-full h-full max-w-sm rounded-lg object-contain"
       aria-hidden
@@ -76,7 +76,7 @@ function IllustrationGenAI() {
 function IllustrationCloud() {
   return (
     <img
-      src="/src/assets/2.gif"
+      src="/2.gif"
       alt="Cloud and DevOps animation"
       className="w-full h-96 object-contain"
       aria-hidden

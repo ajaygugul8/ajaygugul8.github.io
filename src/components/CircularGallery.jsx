@@ -340,18 +340,18 @@ class App {
   }
   createMedias(items, bend = 1, textColor, borderRadius, font) {
     const defaultItems = [
-      { image: '/src/assets/haveit_.png', text: 'Haveit_Startup' },
-      { image: '/src/assets/CreatorCircle.png', text: 'CreatorCircle' },
+      { image: '/haveit_.png', text: 'Haveit_Startup' },
+      { image: '/CreatorCircle.png', text: 'CreatorCircle' },
       { image: 'src/assets/SessionBooking.jpg', text: 'Booking System' },
-      { image: '/src/assets/iitd.jpg', text: 'IIT-Delhi' },
+      { image: '/iitd.jpg', text: 'IIT-Delhi' },
       // { image: 'https://picsum.photos/seed/5/800/600?grayscale', text: 'Deep Diving' },
       // { image: 'https://picsum.photos/seed/16/800/600?grayscale', text: 'Train Track' },
       // { image: 'https://picsum.photos/seed/17/800/600?grayscale', text: 'Santorini' },
       // { image: 'https://picsum.photos/seed/8/800/600?grayscale', text: 'Blurry Lights' },
       // { image: 'https://picsum.photos/seed/9/800/600?grayscale', text: 'New York' },
-      { image: '/src/assets/alumni_pc.jpeg', text: 'Alumni Association' },
+      { image: '/alumni_pc.jpeg', text: 'Alumni Association' },
       // { image: 'https://picsum.photos/seed/21/800/600?grayscale', text: 'Coastline' },
-      { image: '/src/assets/coding.jpg', text: 'Coding Desktop' }
+      { image: '/coding.jpg', text: 'Coding Desktop' }
     ]
     const galleryItems = items && items.length ? items : defaultItems
     this.mediasImages = galleryItems.concat(galleryItems)
