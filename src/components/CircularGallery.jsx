@@ -200,11 +200,26 @@ class Media {
       transparent: true
     })
     const img = new Image()
-    img.crossOrigin = 'anonymous'
     img.src = this.image
     img.onload = () => {
       texture.image = img
       this.program.uniforms.uImageSizes.value = [img.naturalWidth, img.naturalHeight]
+    }
+    img.onerror = () => {
+      console.error(`Failed to load image: ${this.image}`)
+      // Create a fallback colored texture
+      const canvas = document.createElement('canvas')
+      canvas.width = 400
+      canvas.height = 300
+      const ctx = canvas.getContext('2d')
+      ctx.fillStyle = '#333333'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillStyle = '#ffffff'
+      ctx.font = '20px Arial'
+      ctx.textAlign = 'center'
+      ctx.fillText('Image Not Found', canvas.width / 2, canvas.height / 2)
+      texture.image = canvas
+      this.program.uniforms.uImageSizes.value = [canvas.width, canvas.height]
     }
   }
   createMesh() {
