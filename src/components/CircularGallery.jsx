@@ -342,7 +342,7 @@ class App {
     const defaultItems = [
       { image: '/haveit_.png', text: 'Haveit_Startup' },
       { image: '/CreatorCircle.png', text: 'CreatorCircle' },
-      { image: 'src/assets/SessionBooking.jpg', text: 'Booking System' },
+      { image: '/SessionBooking.jpg', text: 'Booking System' },
       { image: '/iitd.jpg', text: 'IIT-Delhi' },
       // { image: 'https://picsum.photos/seed/5/800/600?grayscale', text: 'Deep Diving' },
       // { image: 'https://picsum.photos/seed/16/800/600?grayscale', text: 'Train Track' },
