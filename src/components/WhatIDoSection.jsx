@@ -1,4 +1,5 @@
 import { Zap } from 'lucide-react'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 function TechChips({ items }) {
   return (
@@ -46,42 +47,41 @@ function Panel({ title, techs, bullets }) {
 
 function IllustrationFullStack() {
   return (
-    <img
-      src="/1.gif"
-      alt="Full Stack Development animation"
-      className="w-full h-full max-w-sm rounded-lg object-contain"
-      aria-hidden
-    />
-  )
+    <div className="flex items-center justify-center" aria-hidden>
+      <DotLottieReact
+        src="/fsd.lottie"
+        loop
+        autoplay
+        style={{ width: '100%', height: '360px' }}
+      />
+    </div>
+  );
 }
 
 function IllustrationGenAI() {
   return (
-    <div
-      className="relative flex min-h-[220px] items-center justify-center overflow-hidden rounded-3xl bg-linear-to-br from-indigo-50 via-white to-violet-50 dark:border-neutral-700 dark:from-indigo-950/40 dark:via-neutral-900 dark:to-violet-950/40 sm:min-h-[280px]"
-      aria-hidden
-    >
-      <video
-        src="/coding.mp4"
-        autoPlay
+    <div className="flex items-center justify-center" aria-hidden>
+      <DotLottieReact
+        src="/AI.lottie"
         loop
-        muted
-        playsInline
-        className="h-full w-full object-cover rounded-3xl"
+        autoplay
+        style={{ width: '100%', height: '360px' }}
       />
     </div>
-  )
+  );
 }
 
 function IllustrationCloud() {
   return (
-    <img
-      src="/2.gif"
-      alt="Cloud and DevOps animation"
-      className="w-full h-96 object-contain"
-      aria-hidden
-    />
-  )
+    <div className="flex items-center justify-center" aria-hidden>
+      <DotLottieReact
+        src="/cloud.lottie"
+        loop
+        autoplay
+        style={{ width: '100%', height: '360px' }}
+      />
+    </div>
+  );
 }
 
 const FULL_STACK_TECH = [

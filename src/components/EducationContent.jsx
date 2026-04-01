@@ -1,9 +1,8 @@
 import { GraduationCap, Zap } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 const IIT_WEBSITE = 'https://www.iitd.ac.in'
-
-
 
 function DegreeBullet({ children }) {
   return (
@@ -19,12 +18,7 @@ function DegreeBullet({ children }) {
 
 const MAX_TILT = 11
 
-function TiltDegreeCard({
-  navLabel,
-  dateRange,
-  degreeTitle,
-  bullets
-}) {
+function TiltDegreeCard({ navLabel, dateRange, degreeTitle, bullets }) {
   const rootRef = useRef(null)
   const [transform, setTransform] = useState(
     'perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)'
@@ -35,9 +29,7 @@ function TiltDegreeCard({
     if (
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    ) {
-      return
-    }
+    ) return
     const el = rootRef.current
     if (!el) return
     const rect = el.getBoundingClientRect()
@@ -77,7 +69,9 @@ function TiltDegreeCard({
               <img
                 src="/iit_logo.png"
                 alt="IIT Delhi"
-                className="h-16 w-16 object-contain sm:h-20 sm:w-20"
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover rounded-full"
               />
             </div>
           </div>
@@ -86,11 +80,7 @@ function TiltDegreeCard({
             <div className="rounded-t-[10px] bg-[#FFC857] px-4 py-3.5 dark:bg-amber-600">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <span className="flex items-center gap-2 text-sm font-bold text-white sm:text-[0.95rem]">
-                  <GraduationCap
-                    className="h-5 w-5 shrink-0 text-white"
-                    strokeWidth={2.2}
-                    aria-hidden
-                  />
+                  <GraduationCap className="h-5 w-5 shrink-0 text-white" strokeWidth={2.2} aria-hidden />
                   {navLabel}
                 </span>
                 <span className="w-fit rounded-full bg-white/25 px-3 py-1 text-center text-xs font-semibold text-white backdrop-blur-sm sm:text-sm dark:bg-white/20">
@@ -125,14 +115,7 @@ function TiltDegreeCard({
   )
 }
 
-function CertificationCard({
-  brand,
-  brandClass,
-  title,
-  tagPrimary,
-  tagSecondary,
-  href
-}) {
+function CertificationCard({ brand, brandClass, title, tagPrimary, tagSecondary, href }) {
   return (
     <article className="relative flex min-h-[220px] h-[280px] w-full flex-col overflow-hidden rounded-2xl border border-neutral-200/90 bg-white shadow-[0_12px_40px_-15px_rgba(0,0,0,0.1)] dark:border-neutral-700 dark:bg-neutral-900 max-w-sm mx-auto">
       <div className="pointer-events-none absolute left-3 top-3 z-10 rounded-md bg-violet-900/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white dark:bg-violet-800">
@@ -197,7 +180,7 @@ const MTECH_BULLETS = [
   <>
     Thesis:{' '}
     <strong className="text-[#333] dark:text-neutral-200">
-      &ldquo;Variational Iteration Method and Its Applications&rdquo;
+      "Variational Iteration Method and Its Applications"
     </strong>
     {' '}— solved 25+ nonlinear differential equations with up to 98% approximation accuracy, supervised by Prof. Konijeti Sreenadh.
   </>,
@@ -220,18 +203,15 @@ export default function EducationContent() {
         <div className="mx-auto w-full max-w-6xl xl:max-w-7xl">
           <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:gap-14">
 
-            {/* Video — left */}
+            {/* Lottie Animation — left */}
             <div className="flex-1 flex items-center justify-center" aria-hidden>
-              <div className="relative aspect-square w-full max-w-[320px] overflow-hidden rounded-3xl border border-neutral-200/90 bg-gradient-to-br from-amber-50 via-white to-sky-50 shadow-[0_20px_50px_-20px_rgba(52,152,219,0.2)] dark:border-neutral-700 dark:from-amber-950/20 dark:via-neutral-900 dark:to-sky-950/20">
-                <video
-                  src="/edu.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="h-full w-full object-cover rounded-3xl"
-                />
-              </div>
+              <DotLottieReact
+                src="/edu.lottie"
+                loop
+                autoplay
+                renderConfig={{ devicePixelRatio: 1 }}
+                style={{ width: '100%', height: '320px' }}
+              />
             </div>
 
             {/* Text — right, centered */}
@@ -243,13 +223,15 @@ export default function EducationContent() {
                 Education
               </h1>
               <p className="mt-3 text-lg font-semibold text-[#333] dark:text-neutral-200 sm:text-xl">
-                Qualifications &amp; Certifications
+                Qualifications & Certifications
               </p>
               <p className="mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-[#555] dark:text-neutral-400 sm:text-lg">
-  Integrated <strong className="font-semibold text-[#333] dark:text-neutral-300">
-    B.Tech and M.Tech in Mathematics and Computing
-  </strong> from IIT Delhi — combining mathematical depth with applied computing, culminating in a research thesis in Aug 2024.
-</p>
+                Integrated{' '}
+                <strong className="font-semibold text-[#333] dark:text-neutral-300">
+                  B.Tech and M.Tech in Mathematics and Computing
+                </strong>
+                {' '}from IIT Delhi — combining mathematical depth with applied computing, culminating in a research thesis in Aug 2024.
+              </p>
             </div>
 
           </div>
@@ -290,7 +272,7 @@ export default function EducationContent() {
           id="certifications-heading"
           className="mb-8 text-2xl font-bold tracking-tight text-[#1a1a1a] dark:text-neutral-50 sm:text-3xl text-center"
         >
-          Accredited &amp; Professional Learning
+          Accredited & Professional Learning
         </h2>
         <div className="grid gap-6 sm:grid-cols-2">
           <CertificationCard
@@ -298,7 +280,7 @@ export default function EducationContent() {
             brandClass="text-[#232F3E] dark:text-orange-300"
             title="AWS Certified Developer – Associate (In Progress)"
             tagPrimary="In Progress"
-            tagSecondary="Exam prep &amp; hands-on labs alongside production work"
+            tagSecondary="Exam prep & hands-on labs alongside production work"
             href="https://aws.amazon.com/certification/"
           />
           <CertificationCard

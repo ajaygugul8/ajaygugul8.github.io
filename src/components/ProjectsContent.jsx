@@ -3,25 +3,19 @@ import Magnet from './Magnet'
 import AnimationStage from './AnimationStage'
 import BorderGlow from './BorderGlow'
 import { useState, useEffect } from 'react'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 function ProjectsHeroArt() {
   return (
-    <div
-      className="relative mx-auto flex w-full max-w-md items-center justify-center lg:mx-0"
-      aria-hidden
-    >
-      <div className="relative aspect-square w-full max-w-[min(100%,420px)] rounded-3xl border border-neutral-200/90 bg-linear-to-br from-amber-50 via-white to-sky-50 shadow-[0_20px_50px_-20px_rgba(52,152,219,0.2)] dark:border-neutral-700 dark:from-amber-950/20 dark:via-neutral-900 dark:to-sky-950/20 overflow-hidden">
-        <video
-          src="/working.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="h-full w-full object-cover rounded-3xl"
-        />
-      </div>
+    <div className="flex-1 flex items-center justify-center" aria-hidden>
+      <DotLottieReact
+        src="/projects.lottie"
+        loop
+        autoplay
+        style={{ width: '100%', height: '320px' }}
+      />
     </div>
-  )
+  );
 }
 
 const ACCENTS = [

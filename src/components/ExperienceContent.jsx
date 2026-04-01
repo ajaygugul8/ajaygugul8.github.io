@@ -1,28 +1,19 @@
 import { Clock3, MapPin, Minus, Plus } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
-import ccLogo from '../assets/CC_logo.png'
-import iitLogo from '../assets/iit_logo.png'
-import ltLogo from '../assets/lt_logo.png'
 
 function ExperienceHeroArt() {
   return (
-    <div
-      className="relative mx-auto flex w-full max-w-md items-center justify-center lg:mx-0"
-      aria-hidden
-    >
-      <div className="relative aspect-square w-full max-w-[min(100%,420px)] rounded-3xl border border-neutral-200/90 bg-linear-to-br from-amber-50 via-white to-sky-50 shadow-[0_20px_50px_-20px_rgba(52,152,219,0.2)] dark:border-neutral-700 dark:from-amber-950/20 dark:via-neutral-900 dark:to-sky-950/20 overflow-hidden">
-        <video
-          src="/office.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="h-full w-full object-cover rounded-3xl"
-        />
-      </div>
+    <div className="flex-1 flex items-center justify-center" aria-hidden>
+      <DotLottieReact
+        src="/Software Developer.lottie"
+        loop
+        autoplay
+        style={{ width: '100%', height: '320px' }}
+      />
     </div>
-  )
+  );
 }
 
 function ExperienceCategoryButton({
@@ -255,7 +246,7 @@ export default function ExperienceContent() {
           company: 'Creator Circle',
           dateRange: 'Mar 2025 - Jan 2026',
           location: 'Bangalore',
-          logoSrc: ccLogo,
+          logoSrc: '/CC_logo.png',
           bullets: [
             'Implemented Google OAuth 2.0 and real-time notifications.',
             'Built session booking system with FastAPI + React + Razorpay.',
@@ -268,7 +259,7 @@ export default function ExperienceContent() {
           company: 'Startup Initiative, IIT Delhi',
           dateRange: 'Aug 2024 - Feb 2025',
           location: 'New Delhi',
-          logoSrc: iitLogo,
+          logoSrc: '/iit_logo.png',
           bullets: [
             'Architected a full-stack web app to forecast crop prices by integrating real-time weather and soil data using Prophet (achieved ~90% accuracy).',
             'Built a clean, responsive UI using Streamlit and Bootstrap for smooth accessibility.',
@@ -284,7 +275,7 @@ export default function ExperienceContent() {
           company: 'Academic Web Page (Prof. K. Sreenadh)',
           dateRange: 'Dec 2023 - Jan 2024',
           location: 'New Delhi',
-          logoSrc: iitLogo,
+          logoSrc: '/iit_logo.png',
           bullets: [
             'Designed a responsive academic web page, driving a 30% increase in student engagement.',
             'Integrated 80+ course materials and announcements, optimizing performance by 25%.',
@@ -297,7 +288,7 @@ export default function ExperienceContent() {
           company: 'Larsen & Toubro',
           dateRange: 'Sep 2022 - Nov 2022',
           location: 'Bangalore',
-          logoSrc: ltLogo,
+          logoSrc: '/lt_logo.png',
           bullets: [
             'Modeled and analyzed the ordering process with a team of 5 data scientists using 5 distinct methods, delivering recommendations that increased order output by 8% — implemented in collaboration with development teams across large-scale datasets.'
           ]

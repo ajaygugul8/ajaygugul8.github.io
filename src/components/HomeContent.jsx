@@ -149,16 +149,18 @@ export default function HomeContent() {
           </div>
 
           {/* <AnimationStage> */}
-            <CircularGallery
-              items={
-                HERO_CIRCULAR_GALLERY_ITEMS.length
-                  ? HERO_CIRCULAR_GALLERY_ITEMS
-                  : undefined
-              }
-              textColor={heroGalleryTextColor}
-              bend={3}
-              borderRadius={0.06}
-            />
+            <div className="w-full h-[440px] overflow-hidden rounded-3xl bg-gradient-to-br from-pink-200 via-pink-100 to-rose-200 dark:from-pink-950/60 dark:via-pink-900/40 dark:to-rose-950/60 shadow-[0_0_40px_10px_rgba(236,72,153,0.3)] dark:shadow-[0_0_40px_10px_rgba(236,72,153,0.2)]">
+              <CircularGallery
+                items={
+                  HERO_CIRCULAR_GALLERY_ITEMS.length
+                    ? HERO_CIRCULAR_GALLERY_ITEMS
+                    : undefined
+                }
+                textColor={heroGalleryTextColor}
+                bend={3}
+                borderRadius={0.06}
+              />
+            </div>
           {/* </AnimationStage> */}
         </div>
       </section>

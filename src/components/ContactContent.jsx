@@ -1,7 +1,6 @@
 import Stack from './Stack'
 import FindMeHere from './FindMeHere'
 import { useEffect } from 'react'
-import instagramLogo from '../assets/instagram-gradient.svg'
 import TextType from './TextType'
 
 export default function ContactContent() {
@@ -159,7 +158,7 @@ export default function ContactContent() {
                       color: 'white'
                     }}
                   >
-                    <img src={instagramLogo} alt="Instagram" className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <img src="/instagram-gradient.svg" alt="Instagram" className="w-5 h-5 sm:w-6 sm:h-6" />
                   </a>
                   <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 text-xs bg-gray-800 text-white px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                     Instagram
