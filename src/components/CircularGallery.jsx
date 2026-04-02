@@ -338,6 +338,8 @@ class App {
     this.gl = this.renderer.gl
     this.gl.clearColor(0, 0, 0, 0)
     this.container.appendChild(this.gl.canvas)
+    this.gl.canvas.style.width = '100%'
+    this.gl.canvas.style.height = '100%'
   }
   createCamera() {
     this.camera = new Camera(this.gl)
@@ -488,17 +490,22 @@ export default function CircularGallery({
   useEffect(() => {
     const el = containerRef.current
     if (!el) return undefined
-    const app = new App(el, {
-      items,
-      bend,
-      textColor,
-      borderRadius,
-      font,
-      scrollSpeed,
-      scrollEase
+    let app
+    const raf = requestAnimationFrame(() => {
+      if (el.clientWidth === 0 || el.clientHeight === 0) return
+      app = new App(el, {
+        items,
+        bend,
+        textColor,
+        borderRadius,
+        font,
+        scrollSpeed,
+        scrollEase
+      })
     })
     return () => {
-      app.destroy()
+      cancelAnimationFrame(raf)
+      app?.destroy()
     }
   }, [items, bend, textColor, borderRadius, font, scrollSpeed, scrollEase])
   return <div className="circular-gallery" ref={containerRef} />

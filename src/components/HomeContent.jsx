@@ -86,8 +86,8 @@ export default function HomeContent() {
         aria-labelledby="home-hero-heading"
       >
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-6 xl:max-w-7xl xl:gap-10">
-          <div className="grid justify-items-center text-center">
-            <div className="flex w-full max-w-xl flex-col items-center sm:max-w-2xl lg:max-w-md xl:max-w-lg">
+          <div className="grid justify-items-center text-center lg:justify-items-start lg:text-left">
+  <div className="flex w-full max-w-xl flex-col items-center lg:items-start sm:max-w-2xl lg:max-w-md xl:max-w-lg">
 
               {/* Greeting */}
               <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
@@ -104,8 +104,8 @@ export default function HomeContent() {
                 </span>
 
                 {/* Typing role — one step smaller */}
-                <div className="flex items-center justify-center gap-2 mt-2 md:mt-3">
-                  <div className="flex items-center gap-2 min-w-[240px] sm:min-w-[280px]">
+                <div className="flex items-center justify-center lg:justify-start gap-2 mt-2 md:mt-3">
+  <div className="flex items-center gap-2">
                     <span className="text-base sm:text-lg md:text-xl font-medium text-red-500 dark:text-red-400">
                       {displayText}
                       <span className="animate-pulse">|</span>
@@ -123,17 +123,17 @@ export default function HomeContent() {
               </h1>
 
               {/* Description — smallest */}
-              <p className="mx-auto mt-5 max-w-lg text-pretty text-sm leading-relaxed text-[#555] dark:text-neutral-400 sm:text-base">
+              <p className="mx-auto lg:mx-0 mt-5 max-w-lg text-pretty text-sm leading-relaxed text-[#555] dark:text-neutral-400 sm:text-base">
                 From full-stack web apps to AI/ML pipelines — I build end-to-end solutions
                 that are fast, reliable, and production-ready. Take a look around, or jump
                 to what I work on day to day.
               </p>
 
-              <div className="mt-8 flex justify-center">
+              <div className="mt-8 flex justify-center lg:justify-start">
                 <VisitorCounter />
               </div>
 
-              <div className="mt-8 flex justify-center">
+              <div className="mt-8 flex w-full justify-center">
                 <Magnet padding={50} magnetStrength={50}>
                   <button
                     type="button"

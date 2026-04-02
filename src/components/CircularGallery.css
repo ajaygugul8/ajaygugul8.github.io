@@ -3,6 +3,7 @@
   width: 100%;
   align-self: stretch;
   min-height: min(40vh, 360px);
+  min-height: 320px; /* add this as a hard floor */
   touch-action: none;
 }
 
