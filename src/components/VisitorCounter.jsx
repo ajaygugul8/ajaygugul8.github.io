@@ -3,19 +3,29 @@ import { Eye } from 'lucide-react'
 import { db } from '../firebase'
 import { doc, getDoc, setDoc, increment } from 'firebase/firestore'
 
+const COUNT_CACHE_KEY = 'vc-count'
+
+// module-level — survives remounts, resets on refresh/tab close
+let memoryCount = null
+
 function useCountUp(target, duration = 1200) {
   const [display, setDisplay] = useState(null)
   const rafRef = useRef(null)
 
   useEffect(() => {
     if (target === null) { setDisplay(''); return }
+
+    if (duration === 0) {
+      setDisplay(target)
+      return
+    }
+
     const start = Math.max(1, target - 10)
     const startTime = performance.now()
 
     const tick = (now) => {
       const elapsed = now - startTime
       const progress = Math.min(elapsed / duration, 1)
-      // ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3)
       const current = Math.round(start + (target - start) * eased)
       setDisplay(current)
@@ -33,26 +43,43 @@ function useCountUp(target, duration = 1200) {
 
 export default function VisitorCounter() {
   const [visitorCount, setVisitorCount] = useState(null)
-  const animatedCount = useCountUp(visitorCount, 1200)
+  const isFreshLoad = useRef(memoryCount === null) // true only on first load
+  const animatedCount = useCountUp(visitorCount, isFreshLoad.current ? 1200 : 0)
 
   useEffect(() => {
     const ref = doc(db, 'stats', 'visitors')
+    let cancelled = false
 
     async function trackVisit() {
+      if (memoryCount !== null) {
+        // navigated back — show instantly, no animation
+        setVisitorCount(memoryCount)
+        return
+      }
+
       const snap = await getDoc(ref)
-      if (snap.exists()) {
-        setVisitorCount(snap.data().total)
+      if (!cancelled && snap.exists()) {
+        const val = snap.data().total
+        memoryCount = val
+        sessionStorage.setItem(COUNT_CACHE_KEY, String(val))
+        setVisitorCount(val) // triggers animation since isFreshLoad.current = true
       }
 
       if (!sessionStorage.getItem('visitor_counted')) {
-        await setDoc(ref, { total: increment(1) }, { merge: true })
         sessionStorage.setItem('visitor_counted', '1')
+        await setDoc(ref, { total: increment(1) }, { merge: true })
         const updated = await getDoc(ref)
-        if (updated.exists()) setVisitorCount(updated.data().total)
+        if (!cancelled && updated.exists()) {
+          const val = updated.data().total
+          memoryCount = val
+          sessionStorage.setItem(COUNT_CACHE_KEY, String(val))
+          setVisitorCount(val)
+        }
       }
     }
 
     trackVisit()
+    return () => { cancelled = true }
   }, [])
 
   return (

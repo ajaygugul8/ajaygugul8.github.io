@@ -1,6 +1,5 @@
 import { Camera, Mesh, Plane, Program, Renderer, Texture, Transform } from 'ogl'
 import { useEffect, useRef } from 'react'
-
 import './CircularGallery.css'
 
 function debounce(func, wait) {
@@ -58,10 +57,7 @@ class Title {
   }
   createMesh() {
     const { texture, width, height } = createTextTexture(
-      this.gl,
-      this.text,
-      this.font,
-      this.textColor
+      this.gl, this.text, this.font, this.textColor
     )
     const geometry = new Plane(this.gl)
     const program = new Program(this.gl, {
@@ -99,21 +95,14 @@ class Title {
   }
 }
 
+// shared image cache across remounts
+const imageCache = new Map()
+
 class Media {
   constructor({
-    geometry,
-    gl,
-    image,
-    index,
-    length,
-    scene,
-    screen,
-    text,
-    viewport,
-    bend,
-    textColor,
-    borderRadius = 0,
-    font
+    geometry, gl, image, index, length, scene,
+    screen, text, viewport, bend, textColor,
+    borderRadius = 0, font, onLoad
   }) {
     this.extra = 0
     this.geometry = geometry
@@ -129,15 +118,15 @@ class Media {
     this.textColor = textColor
     this.borderRadius = borderRadius
     this.font = font
+    this.onLoad = onLoad
     this.createShader()
     this.createMesh()
     this.createTitle()
     this.onResize()
   }
+
   createShader() {
-    const texture = new Texture(this.gl, {
-      generateMipmaps: true
-    })
+    const texture = new Texture(this.gl, { generateMipmaps: true })
     this.program = new Program(this.gl, {
       depthTest: false,
       depthWrite: false,
@@ -164,12 +153,12 @@ class Media {
         uniform sampler2D tMap;
         uniform float uBorderRadius;
         varying vec2 vUv;
-        
+
         float roundedBoxSDF(vec2 p, vec2 b, float r) {
           vec2 d = abs(p) - b;
           return length(max(d, vec2(0.0))) + min(max(d.x, d.y), 0.0) - r;
         }
-        
+
         void main() {
           vec2 ratio = vec2(
             min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
@@ -180,12 +169,8 @@ class Media {
             vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
           );
           vec4 color = texture2D(tMap, uv);
-          
           float d = roundedBoxSDF(vUv - 0.5, vec2(0.5 - uBorderRadius), uBorderRadius);
-          
-          float edgeSmooth = 0.002;
-          float alpha = 1.0 - smoothstep(-edgeSmooth, edgeSmooth, d);
-          
+          float alpha = 1.0 - smoothstep(-0.002, 0.002, d);
           gl_FragColor = vec4(color.rgb, alpha);
         }
       `,
@@ -199,48 +184,56 @@ class Media {
       },
       transparent: true
     })
-    const img = new Image()
-    img.src = this.image
-    img.onload = () => {
-      texture.image = img
-      this.program.uniforms.uImageSizes.value = [img.naturalWidth, img.naturalHeight]
-    }
-    img.onerror = () => {
-      console.error(`Failed to load image: ${this.image}`)
-      // Create a fallback colored texture
-      const canvas = document.createElement('canvas')
-      canvas.width = 400
-      canvas.height = 300
-      const ctx = canvas.getContext('2d')
-      ctx.fillStyle = '#333333'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      ctx.fillStyle = '#ffffff'
-      ctx.font = '20px Arial'
-      ctx.textAlign = 'center'
-      ctx.fillText('Image Not Found', canvas.width / 2, canvas.height / 2)
-      texture.image = canvas
-      this.program.uniforms.uImageSizes.value = [canvas.width, canvas.height]
+
+    // use cached image if available to avoid blank flash on remount
+    if (imageCache.has(this.image)) {
+      const cached = imageCache.get(this.image)
+      texture.image = cached
+      this.program.uniforms.uImageSizes.value = [cached.naturalWidth || cached.width, cached.naturalHeight || cached.height]
+      this.onLoad?.()
+    } else {
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.src = this.image
+      img.onload = () => {
+        imageCache.set(this.image, img)
+        texture.image = img
+        this.program.uniforms.uImageSizes.value = [img.naturalWidth, img.naturalHeight]
+        this.onLoad?.()
+      }
+      img.onerror = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = 400
+        canvas.height = 300
+        const ctx = canvas.getContext('2d')
+        ctx.fillStyle = '#1a1a2e'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.fillStyle = 'rgba(255,255,255,0.4)'
+        ctx.font = '18px sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('Image Not Found', canvas.width / 2, canvas.height / 2)
+        imageCache.set(this.image, canvas)
+        texture.image = canvas
+        this.program.uniforms.uImageSizes.value = [canvas.width, canvas.height]
+        this.onLoad?.()
+      }
     }
   }
+
   createMesh() {
-    this.plane = new Mesh(this.gl, {
-      geometry: this.geometry,
-      program: this.program
-    })
+    this.plane = new Mesh(this.gl, { geometry: this.geometry, program: this.program })
     this.plane.setParent(this.scene)
   }
+
   createTitle() {
     this.title = new Title({
-      gl: this.gl,
-      plane: this.plane,
-      text: this.text,
-      textColor: this.textColor,
-      font: this.font
+      gl: this.gl, plane: this.plane,
+      text: this.text, textColor: this.textColor, font: this.font
     })
   }
+
   update(scroll, direction) {
     this.plane.position.x = this.x - scroll.current - this.extra
-
     const x = this.plane.position.x
     const H = this.viewport.width / 2
 
@@ -251,7 +244,6 @@ class Media {
       const B_abs = Math.abs(this.bend)
       const R = (H * H + B_abs * B_abs) / (2 * B_abs)
       const effectiveX = Math.min(Math.abs(x), H)
-
       const arc = R - Math.sqrt(R * R - effectiveX * effectiveX)
       if (this.bend > 0) {
         this.plane.position.y = -arc
@@ -279,14 +271,14 @@ class Media {
       this.isBefore = this.isAfter = false
     }
   }
+
   onResize({ screen, viewport } = {}) {
     if (screen) this.screen = screen
     if (viewport) {
       this.viewport = viewport
       if (this.plane.program.uniforms.uViewportSizes) {
         this.plane.program.uniforms.uViewportSizes.value = [
-          this.viewport.width,
-          this.viewport.height
+          this.viewport.width, this.viewport.height
         ]
       }
     }
@@ -302,24 +294,24 @@ class Media {
 }
 
 class App {
-  constructor(
-    container,
-    {
-      items,
-      bend,
-      textColor = '#ffffff',
-      borderRadius = 0,
-      font = 'bold 30px Inter, system-ui, sans-serif',
-      scrollSpeed = 2,
-      scrollEase = 0.05
-    } = {}
-  ) {
+  constructor(container, {
+    items, bend, textColor = '#ffffff',
+    borderRadius = 0, font = 'bold 30px Inter, system-ui, sans-serif',
+    scrollSpeed = 2, scrollEase = 0.05,
+    onReady
+  } = {}) {
     document.documentElement.classList.remove('no-js')
     this.container = container
     this.scrollSpeed = scrollSpeed
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 }
     this.onCheckDebounce = debounce(this.onCheck.bind(this), 200)
+    this.onResizeDebounce = debounce(this.onResize.bind(this), 150)
     this.update = this.update.bind(this)
+    this.onReady = onReady
+    this.loadedCount = 0
+    this.totalCount = 0
+    this.isDestroyed = false
+
     this.createRenderer()
     this.createCamera()
     this.createScene()
@@ -329,11 +321,13 @@ class App {
     this.update()
     this.addEventListeners()
   }
+
   createRenderer() {
     this.renderer = new Renderer({
       alpha: true,
       antialias: true,
-      dpr: Math.min(window.devicePixelRatio || 1, 2)
+      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      powerPreference: 'high-performance'
     })
     this.gl = this.renderer.gl
     this.gl.clearColor(0, 0, 0, 0)
@@ -341,37 +335,39 @@ class App {
     this.gl.canvas.style.width = '100%'
     this.gl.canvas.style.height = '100%'
   }
+
   createCamera() {
     this.camera = new Camera(this.gl)
     this.camera.fov = 45
     this.camera.position.z = 20
   }
+
   createScene() {
     this.scene = new Transform()
   }
+
   createGeometry() {
+    // lower segments on mobile for performance
+    const isMobile = window.innerWidth < 768
     this.planeGeometry = new Plane(this.gl, {
-      heightSegments: 50,
-      widthSegments: 100
+      heightSegments: isMobile ? 25 : 50,
+      widthSegments: isMobile ? 50 : 100
     })
   }
+
   createMedias(items, bend = 1, textColor, borderRadius, font) {
     const defaultItems = [
-      { image: '/haveit_.png', text: 'Haveit_Startup' },
+      { image: '/haveit_.png',      text: 'Haveit_Startup' },
       { image: '/CreatorCircle.png', text: 'CreatorCircle' },
       { image: '/SessionBooking.jpg', text: 'Booking System' },
-      { image: '/iitd.jpg', text: 'IIT-Delhi' },
-      // { image: 'https://picsum.photos/seed/5/800/600?grayscale', text: 'Deep Diving' },
-      // { image: 'https://picsum.photos/seed/16/800/600?grayscale', text: 'Train Track' },
-      // { image: 'https://picsum.photos/seed/17/800/600?grayscale', text: 'Santorini' },
-      // { image: 'https://picsum.photos/seed/8/800/600?grayscale', text: 'Blurry Lights' },
-      // { image: 'https://picsum.photos/seed/9/800/600?grayscale', text: 'New York' },
-      { image: '/alumni_pc.jpeg', text: 'Alumni Association' },
-      // { image: 'https://picsum.photos/seed/21/800/600?grayscale', text: 'Coastline' },
-      { image: '/coding.jpg', text: 'Coding Desktop' }
+      { image: '/iitd.jpg',          text: 'IIT-Delhi' },
+      { image: '/alumni_pc.jpeg',    text: 'Alumni Association' },
+      { image: '/coding.jpg',        text: 'Coding Desktop' },
     ]
     const galleryItems = items && items.length ? items : defaultItems
     this.mediasImages = galleryItems.concat(galleryItems)
+    this.totalCount = this.mediasImages.length
+
     this.medias = this.mediasImages.map((data, index) => {
       return new Media({
         geometry: this.planeGeometry,
@@ -383,33 +379,41 @@ class App {
         screen: this.screen,
         text: data.text,
         viewport: this.viewport,
-        bend,
-        textColor,
-        borderRadius,
-        font
+        bend, textColor, borderRadius, font,
+        onLoad: () => {
+          this.loadedCount++
+          if (this.loadedCount >= this.totalCount && !this.isDestroyed) {
+            this.onReady?.()
+          }
+        }
       })
     })
   }
+
   onTouchDown(e) {
     this.isDown = true
     this.scroll.position = this.scroll.current
     this.start = e.touches ? e.touches[0].clientX : e.clientX
   }
+
   onTouchMove(e) {
     if (!this.isDown) return
     const x = e.touches ? e.touches[0].clientX : e.clientX
     const distance = (this.start - x) * (this.scrollSpeed * 0.025)
     this.scroll.target = this.scroll.position + distance
   }
+
   onTouchUp() {
     this.isDown = false
     this.onCheck()
   }
+
   onWheel(e) {
     const delta = e.deltaY || e.wheelDelta || e.detail
     this.scroll.target += (delta > 0 ? this.scrollSpeed : -this.scrollSpeed) * 0.2
     this.onCheckDebounce()
   }
+
   onCheck() {
     if (!this.medias || !this.medias[0]) return
     const width = this.medias[0].width
@@ -417,15 +421,15 @@ class App {
     const item = width * itemIndex
     this.scroll.target = this.scroll.target < 0 ? -item : item
   }
+
   onResize() {
     this.screen = {
       width: this.container.clientWidth,
       height: this.container.clientHeight
     }
+    if (this.screen.width === 0 || this.screen.height === 0) return
     this.renderer.setSize(this.screen.width, this.screen.height)
-    this.camera.perspective({
-      aspect: this.screen.width / this.screen.height
-    })
+    this.camera.perspective({ aspect: this.screen.width / this.screen.height })
     const fov = (this.camera.fov * Math.PI) / 180
     const height = 2 * Math.tan(fov / 2) * this.camera.position.z
     const width = height * this.camera.aspect
@@ -434,7 +438,9 @@ class App {
       this.medias.forEach(media => media.onResize({ screen: this.screen, viewport: this.viewport }))
     }
   }
+
   update() {
+    if (this.isDestroyed) return
     this.scroll.current = lerp(this.scroll.current, this.scroll.target, this.scroll.ease)
     const direction = this.scroll.current > this.scroll.last ? 'right' : 'left'
     if (this.medias) {
@@ -444,33 +450,37 @@ class App {
     this.scroll.last = this.scroll.current
     this.raf = window.requestAnimationFrame(this.update)
   }
+
   addEventListeners() {
-    this.boundOnResize = this.onResize.bind(this)
-    this.boundOnWheel = this.onWheel.bind(this)
+    this.boundOnResize    = this.onResizeDebounce.bind(this)
+    this.boundOnWheel     = this.onWheel.bind(this)
     this.boundOnTouchDown = this.onTouchDown.bind(this)
     this.boundOnTouchMove = this.onTouchMove.bind(this)
-    this.boundOnTouchUp = this.onTouchUp.bind(this)
-    window.addEventListener('resize', this.boundOnResize)
-    window.addEventListener('mousewheel', this.boundOnWheel)
-    window.addEventListener('wheel', this.boundOnWheel)
-    window.addEventListener('mousedown', this.boundOnTouchDown)
-    window.addEventListener('mousemove', this.boundOnTouchMove)
-    window.addEventListener('mouseup', this.boundOnTouchUp)
-    window.addEventListener('touchstart', this.boundOnTouchDown)
-    window.addEventListener('touchmove', this.boundOnTouchMove)
-    window.addEventListener('touchend', this.boundOnTouchUp)
+    this.boundOnTouchUp   = this.onTouchUp.bind(this)
+
+    window.addEventListener('resize',      this.boundOnResize)
+    window.addEventListener('mousewheel',  this.boundOnWheel,     { passive: true })
+    window.addEventListener('wheel',       this.boundOnWheel,     { passive: true })
+    window.addEventListener('mousedown',   this.boundOnTouchDown)
+    window.addEventListener('mousemove',   this.boundOnTouchMove)
+    window.addEventListener('mouseup',     this.boundOnTouchUp)
+    window.addEventListener('touchstart',  this.boundOnTouchDown, { passive: true })
+    window.addEventListener('touchmove',   this.boundOnTouchMove, { passive: true })
+    window.addEventListener('touchend',    this.boundOnTouchUp)
   }
+
   destroy() {
+    this.isDestroyed = true
     window.cancelAnimationFrame(this.raf)
-    window.removeEventListener('resize', this.boundOnResize)
+    window.removeEventListener('resize',     this.boundOnResize)
     window.removeEventListener('mousewheel', this.boundOnWheel)
-    window.removeEventListener('wheel', this.boundOnWheel)
-    window.removeEventListener('mousedown', this.boundOnTouchDown)
-    window.removeEventListener('mousemove', this.boundOnTouchMove)
-    window.removeEventListener('mouseup', this.boundOnTouchUp)
+    window.removeEventListener('wheel',      this.boundOnWheel)
+    window.removeEventListener('mousedown',  this.boundOnTouchDown)
+    window.removeEventListener('mousemove',  this.boundOnTouchMove)
+    window.removeEventListener('mouseup',    this.boundOnTouchUp)
     window.removeEventListener('touchstart', this.boundOnTouchDown)
-    window.removeEventListener('touchmove', this.boundOnTouchMove)
-    window.removeEventListener('touchend', this.boundOnTouchUp)
+    window.removeEventListener('touchmove',  this.boundOnTouchMove)
+    window.removeEventListener('touchend',   this.boundOnTouchUp)
     if (this.renderer?.gl?.canvas?.parentNode) {
       this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas)
     }
@@ -487,26 +497,48 @@ export default function CircularGallery({
   scrollEase = 0.05
 }) {
   const containerRef = useRef(null)
+
   useEffect(() => {
     const el = containerRef.current
-    if (!el) return undefined
+    if (!el) return
+
     let app
-    const raf = requestAnimationFrame(() => {
-      if (el.clientWidth === 0 || el.clientHeight === 0) return
+    let rafId
+
+    // wait for container to have real dimensions
+    const init = () => {
+      if (el.clientWidth === 0 || el.clientHeight === 0) {
+        rafId = requestAnimationFrame(init)
+        return
+      }
       app = new App(el, {
-        items,
-        bend,
-        textColor,
-        borderRadius,
-        font,
-        scrollSpeed,
-        scrollEase
+        items, bend, textColor, borderRadius, font, scrollSpeed, scrollEase,
+        onReady: () => {
+          // fade in canvas only after all images loaded
+          el.classList.add('ready')
+        }
       })
+    }
+
+    // use ResizeObserver to catch when container gets real size
+    const ro = new ResizeObserver(() => {
+      if (el.clientWidth > 0 && el.clientHeight > 0 && !app) {
+        ro.disconnect()
+        init()
+      }
     })
+    ro.observe(el)
+
+    // also try immediately
+    rafId = requestAnimationFrame(init)
+
     return () => {
-      cancelAnimationFrame(raf)
+      cancelAnimationFrame(rafId)
+      ro.disconnect()
+      el.classList.remove('ready')
       app?.destroy()
     }
   }, [items, bend, textColor, borderRadius, font, scrollSpeed, scrollEase])
+
   return <div className="circular-gallery" ref={containerRef} />
 }
