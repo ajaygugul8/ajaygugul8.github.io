@@ -231,7 +231,7 @@ export default function ContactContent() {
                 cards={[
   <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
     <div className="flex items-center mb-4">
-      <div className="w-10 h-10 bg-violet-600 rounded-full mr-3 flex items-center justify-center text-white font-bold text-sm">RK</div>
+      <div className="w-10 h-10 bg-violet-600 rounded-full mr-3 flex items-center justify-center text-white font-bold text-sm">SB</div>
       <div>
         <h4 className="font-semibold text-gray-800 dark:text-gray-200">S Bharat</h4>
         <p className="text-sm text-gray-500 dark:text-gray-400">CTO, Creator Circle</p>
