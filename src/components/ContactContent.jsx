@@ -213,7 +213,7 @@ export default function ContactContent() {
         {/* What People Say About Me Section */}
         <div className="mt-20 text-center">
           <h3 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-            <span className="text-white">What People </span>
+            <span className="text-neutral-300 dark:text-neutral-600">What People </span>
             <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-orange-400 bg-clip-text text-transparent">
               Say About Me
             </span>
