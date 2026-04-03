@@ -1,25 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { PORTFOLIO_ONBOARDING_KEY } from './onboardingKey'
 export { PORTFOLIO_ONBOARDING_KEY }
 
-const GREETINGS = [
-  { lang: 'English',  text: 'Hello' },
-  { lang: 'Spanish',  text: 'Hola' },
-  { lang: 'French',   text: 'Bonjour' },
-  { lang: 'Hindi',    text: 'नमस्ते' },
-  { lang: 'Telugu',   text: 'నమస్కారం' },
-  { lang: 'Japanese', text: 'こんにちは' },
-  { lang: 'Korean',   text: '안녕하세요' },
-]
-
-const ROTATE_MS       = 320
-const WELCOME_HOLD_MS = 1_600
-const CURTAIN_MS      = 1_000
+const HELLO_DUR    = 3200   // stroke draw duration
+const HELLO_HOLD   = 1000   // time fully visible before transitioning
+const WELCOME_DUR  = 3200
+const WELCOME_HOLD = 800
+const CURTAIN_MS   = 1050
 
 export default function WelcomeFlow({ onComplete }) {
-  const [phase, setPhase]         = useState('greetings')
-  const [index, setIndex]         = useState(0)
+  const [phase, setPhase]         = useState('hello')
   const [curtainUp, setCurtainUp] = useState(false)
+  const helloRef                  = useRef(null)
+  const welcomeRef                = useRef(null)
 
   const reducedMotion = useMemo(
     () =>
@@ -28,174 +21,168 @@ export default function WelcomeFlow({ onComplete }) {
     [],
   )
 
-  // ← save to sessionStorage immediately on first mount
-  // this way refresh will always find the key and skip the flow
   useEffect(() => {
-    try {
-      sessionStorage.setItem(PORTFOLIO_ONBOARDING_KEY, '1')
-    } catch { /* ignore */ }
+    try { sessionStorage.setItem(PORTFOLIO_ONBOARDING_KEY, '1') } catch { /* ignore */ }
   }, [])
 
-  const finish = useCallback(() => {
-    onComplete()
-  }, [onComplete])
-
-  // greeting rotation
-  useEffect(() => {
-    if (phase !== 'greetings') return
-    if (reducedMotion) {
-      setPhase('welcome')
-      return
-    }
-    const id = window.setInterval(() => {
-      setIndex(i => {
-        const next = i + 1
-        if (next >= GREETINGS.length) {
-          clearInterval(id)
-          setPhase('welcome')
-          return i
-        }
-        return next
+  const animateMacStyle = (el, drawDur) => {
+    if (!el) return
+    const len = el.getComputedTextLength?.() ?? 1000
+    el.style.transition       = 'none'
+    el.style.strokeDasharray  = `${len}`
+    el.style.strokeDashoffset = `${len}`
+    el.style.fillOpacity      = '0'
+    el.style.strokeOpacity    = '1'
+    el.getBoundingClientRect()
+    el.style.transition = [
+      `stroke-dashoffset ${drawDur}ms cubic-bezier(0.37, 0, 0.63, 1)`,
+      `fill-opacity ${Math.round(drawDur * 0.5)}ms ${Math.round(drawDur * 0.55)}ms ease`,
+      `stroke-opacity 300ms ${Math.round(drawDur * 0.95)}ms ease`,
+    ].join(', ')
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.style.strokeDashoffset = '0'
+        el.style.fillOpacity      = '1'
+        el.style.strokeOpacity    = '0'
       })
-    }, ROTATE_MS)
-    return () => clearInterval(id)
+    })
+  }
+
+  useEffect(() => {
+    if (phase !== 'hello' || reducedMotion) return
+    const run = () => animateMacStyle(helloRef.current, HELLO_DUR)
+    if (document.fonts?.ready) document.fonts.ready.then(run)
+    else setTimeout(run, 400)
+  }, [phase, reducedMotion])
+
+  useEffect(() => {
+    if (phase !== 'welcome' || reducedMotion) return
+    const run = () => animateMacStyle(welcomeRef.current, WELCOME_DUR)
+    if (document.fonts?.ready) document.fonts.ready.then(run)
+    else setTimeout(run, 50)
+  }, [phase, reducedMotion])
+
+  // hello → welcome
+  useEffect(() => {
+    if (phase !== 'hello') return
+    if (reducedMotion) { setPhase('welcome'); return }
+    const id = setTimeout(() => setPhase('welcome'), HELLO_DUR + HELLO_HOLD)
+    return () => clearTimeout(id)
   }, [phase, reducedMotion])
 
   // welcome → curtain
   useEffect(() => {
     if (phase !== 'welcome') return
-    const id = window.setTimeout(() => setPhase('curtain'), WELCOME_HOLD_MS)
+    const id = setTimeout(() => setPhase('curtain'), WELCOME_DUR + WELCOME_HOLD)
     return () => clearTimeout(id)
   }, [phase])
 
-  // curtain rises → finish
+  // curtain
   useEffect(() => {
     if (phase !== 'curtain') return
-    const t1 = window.setTimeout(() => setCurtainUp(true), 50)
-    const t2 = window.setTimeout(finish, 50 + CURTAIN_MS)
+    const t1 = setTimeout(() => setCurtainUp(true), 80)
+    const t2 = setTimeout(() => {
+      setPhase('done')
+      onComplete?.()
+    }, 80 + CURTAIN_MS)
     return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [phase, finish])
+  }, [phase, onComplete])
+
+  if (phase === 'done') return null
+
+  const gradient = 'linear-gradient(135deg, #b44fa0 0%, #c93b72 42%, #7b5ec7 100%)'
+
+  const base = {
+    position: 'fixed', inset: 0,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    zIndex: 9999,
+    background: gradient,
+  }
+
+  const helloStyle = {
+    fontFamily: "'Dancing Script', cursive",
+    fontSize: '160px',
+    fontWeight: 700,
+    fill: 'rgba(255,255,255,0.92)',
+    fillOpacity: 0,
+    stroke: 'rgba(255,255,255,0.55)',
+    strokeWidth: '3px',
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+    paintOrder: 'stroke fill',
+    filter: 'drop-shadow(0 0 18px rgba(255,255,255,0.35))',
+  }
+
+  // Same visual treatment as hello — thick semi-transparent stroke + glow
+  const welcomeStyle = {
+    fontFamily: "'Quicksand', 'SF Pro Display', 'Helvetica Neue', Helvetica, sans-serif",
+    fontSize: '130px',
+    fontWeight: 200,
+    letterSpacing: '0.18em',
+    fill: 'rgba(255,255,255,0.92)',
+    fillOpacity: 0,
+    stroke: 'rgba(255,255,255,0.55)',
+    strokeWidth: '3px',
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+    paintOrder: 'stroke fill',
+    filter: 'drop-shadow(0 0 18px rgba(255,255,255,0.35))',
+  }
 
   return (
     <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@200;300&display=swap"
+        rel="stylesheet"
+      />
+
       <style>{`
-        @keyframes wf-fade-in {
-          from { opacity: 0; transform: translateY(12px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes wf-welcome-in {
-          0%   { opacity: 0; letter-spacing: 0.35em; filter: blur(6px); }
-          60%  { opacity: 1; filter: blur(0); }
-          100% { opacity: 1; letter-spacing: 0.18em; }
-        }
-        @keyframes wf-sub-in {
-          from { opacity: 0; transform: translateY(8px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
         @keyframes wf-curtain-up {
           from { transform: translateY(0); }
           to   { transform: translateY(-110%); }
         }
       `}</style>
 
-      {/* greetings phase */}
-      {phase === 'greetings' && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="wf-title"
-          style={{
-            position: 'fixed', inset: 0,
-            background: '#000',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            zIndex: 9999,
-          }}
-        >
-          <h1 id="wf-title" style={{
-            position: 'absolute', width: 1, height: 1,
-            overflow: 'hidden', clip: 'rect(0,0,0,0)'
-          }}>
-            Multilingual welcome
-          </h1>
-          {reducedMotion ? (
-            <p style={{ color: '#fff', fontSize: 'clamp(3rem,10vw,5rem)', fontWeight: 300, margin: 0 }}>
-              Hello
-            </p>
-          ) : (
-            <p
-              key={`${GREETINGS[index].lang}-${index}`}
-              aria-live="polite"
-              aria-atomic="true"
-              style={{
-                color: '#fff',
-                fontSize: 'clamp(3rem,10vw,5rem)',
-                fontWeight: 300,
-                margin: 0,
-                animation: 'wf-fade-in 0.3s ease-out both',
-              }}
-            >
-              {GREETINGS[index].text}
-            </p>
-          )}
+      {/* ── HELLO ── */}
+      {phase === 'hello' && (
+        <div role="dialog" aria-modal="true" aria-label="Welcome animation" style={base}>
+          <svg
+            viewBox="0 0 680 200"
+            style={{ width: 'min(88vw, 620px)', overflow: 'visible' }}
+            aria-hidden="true"
+          >
+            <text ref={helloRef} x="340" y="158" textAnchor="middle" style={helloStyle}>
+              hello
+            </text>
+          </svg>
         </div>
       )}
 
-      {/* welcome phase */}
+      {/* ── WELCOME ── */}
       {phase === 'welcome' && (
-        <div
-          style={{
-            position: 'fixed', inset: 0,
-            background: '#000',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            gap: '1rem',
-            zIndex: 9999,
-          }}
-        >
-          <p
-            style={{
-              color: '#fff',
-              fontSize: 'clamp(3.5rem,12vw,7rem)',
-              fontWeight: 200,
-              letterSpacing: '0.18em',
-              margin: 0,
-              animation: 'wf-welcome-in 0.9s cubic-bezier(0.22,1,0.36,1) both',
-            }}
+        <div style={base}>
+          <svg
+            viewBox="0 0 980 160"
+            style={{ width: 'min(92vw, 920px)', overflow: 'visible' }}
+            aria-hidden="true"
           >
-            Welcome
-          </p>
-          <p
-            style={{
-              color: 'rgba(255,255,255,0.45)',
-              fontSize: 'clamp(0.85rem,2.5vw,1.05rem)',
-              fontWeight: 300,
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
-              margin: 0,
-              animation: 'wf-sub-in 0.6s 0.5s ease-out both',
-            }}
-          >
-            to my portfolio
-          </p>
+            <text ref={welcomeRef} x="490" y="125" textAnchor="middle" style={welcomeStyle}>
+              Welcome
+            </text>
+          </svg>
         </div>
       )}
 
-      {/* curtain phase */}
+      {/* ── CURTAIN ── */}
       {phase === 'curtain' && (
-        <div
-          style={{
-            position: 'fixed', inset: 0,
-            zIndex: 9999,
-            overflow: 'hidden',
-            pointerEvents: 'none',
-          }}
-        >
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, overflow: 'hidden', pointerEvents: 'none' }}>
           <div
             style={{
-              position: 'absolute',
-              top: 0, left: 0,
+              position: 'absolute', top: 0, left: 0,
               width: '100%',
-              height: 'calc(100% + 120px)',
+              height: 'calc(100% + 80px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               animation: curtainUp
                 ? `wf-curtain-up ${CURTAIN_MS}ms cubic-bezier(0.7,0,0.2,1) forwards`
                 : 'none',
@@ -203,49 +190,33 @@ export default function WelcomeFlow({ onComplete }) {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="100%"
-              height="100%"
+              width="100%" height="100%"
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
-              style={{ display: 'block', width: '100%', height: '100%' }}
+              style={{ position: 'absolute', inset: 0, display: 'block' }}
             >
-              <path
-                d="M 0,0 L 100,0 L 100,90 C 75,110 25,110 0,90 Z"
-                fill="#000"
-              />
+              <defs>
+                <linearGradient id="wf-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%"   stopColor="#b44fa0" />
+                  <stop offset="42%"  stopColor="#c93b72" />
+                  <stop offset="100%" stopColor="#7b5ec7" />
+                </linearGradient>
+              </defs>
+              <path d="M 0,0 L 100,0 L 100,95 Q 50,100 0,95 Z" fill="url(#wf-grad)" />
             </svg>
 
-            <div
-              style={{
-                position: 'absolute',
-                top: '50%', left: '50%',
-                transform: 'translate(-50%, -50%)',
-                textAlign: 'center',
-                pointerEvents: 'none',
-              }}
+            <svg
+              viewBox="0 0 980 160"
+              style={{ width: 'min(92vw, 920px)', overflow: 'visible', position: 'relative' }}
+              aria-hidden="true"
             >
-              <p style={{
-                color: '#fff',
-                fontSize: 'clamp(3.5rem,12vw,7rem)',
-                fontWeight: 200,
-                letterSpacing: '0.18em',
-                margin: 0,
-                whiteSpace: 'nowrap',
-              }}>
+              <text
+                x="490" y="125" textAnchor="middle"
+                style={{ ...welcomeStyle, fillOpacity: 1, strokeOpacity: 0 }}
+              >
                 Welcome
-              </p>
-              <p style={{
-                color: 'rgba(255,255,255,0.45)',
-                fontSize: 'clamp(0.85rem,2.5vw,1.05rem)',
-                fontWeight: 300,
-                letterSpacing: '0.22em',
-                textTransform: 'uppercase',
-                margin: 0,
-                marginTop: '0.75rem',
-              }}>
-                to my portfolio
-              </p>
-            </div>
+              </text>
+            </svg>
           </div>
         </div>
       )}

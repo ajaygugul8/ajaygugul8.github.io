@@ -105,7 +105,7 @@ export default function HomeContent() {
 
                 {/* Typing role — one step smaller */}
                 <div className="flex items-center justify-center lg:justify-start gap-2 mt-2 md:mt-3">
-  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <span className="text-base sm:text-lg md:text-xl font-medium text-red-500 dark:text-red-400">
                       {displayText}
                       <span className="animate-pulse">|</span>
@@ -133,7 +133,7 @@ export default function HomeContent() {
                 <VisitorCounter />
               </div>
 
-              <div className="mt-8 flex w-full justify-center">
+              <div className="mt-8 flex w-full justify-center lg:justify-start">
                 <Magnet padding={50} magnetStrength={50}>
                   <button
                     type="button"

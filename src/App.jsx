@@ -50,18 +50,17 @@ function App() {
     }
   }, [])
 
-  if (!onboardingDone) {
-    return (
-      <Suspense fallback={null}>
-        <WelcomeFlow onComplete={() => setOnboardingDone(true)} />
-      </Suspense>
-    )
-  }
-
   const ActiveView = NAV_VIEWS[activeNav] ?? NAV_VIEWS.Home
 
   return (
     <div className="min-h-svh bg-[#fff9f5] dark:bg-neutral-950 flex flex-col">
+      {/* ✅ WelcomeFlow overlays on top — homepage always renders beneath it */}
+      {!onboardingDone && (
+        <Suspense fallback={null}>
+          <WelcomeFlow onComplete={() => setOnboardingDone(true)} />
+        </Suspense>
+      )}
+
       <Navbar activeNav={activeNav} onNavChange={handleNavChange} />
       <main
         id="main-content"
