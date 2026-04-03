@@ -4,8 +4,8 @@ export { PORTFOLIO_ONBOARDING_KEY }
 
 const HELLO_DUR    = 3200   // stroke draw duration
 const HELLO_HOLD   = 1000   // time fully visible before transitioning
-const WELCOME_DUR  = 3200
-const WELCOME_HOLD = 800
+const WELCOME_DUR  = 1800
+const WELCOME_HOLD = 400
 const CURTAIN_MS   = 1050
 
 export default function WelcomeFlow({ onComplete }) {
@@ -90,7 +90,8 @@ export default function WelcomeFlow({ onComplete }) {
 
   if (phase === 'done') return null
 
-  const gradient = 'linear-gradient(135deg, #b44fa0 0%, #c93b72 42%, #7b5ec7 100%)'
+  // const gradient = 'linear-gradient(135deg, #b4964f 0%, #c93b72 42%, #7b5ec7 100%)'
+  const gradient = '#ffffff'
 
   const base = {
     position: 'fixed', inset: 0,
@@ -103,30 +104,30 @@ export default function WelcomeFlow({ onComplete }) {
     fontFamily: "'Dancing Script', cursive",
     fontSize: '160px',
     fontWeight: 700,
-    fill: 'rgba(255,255,255,0.92)',
+    fill: 'url(#hello-grad)',
     fillOpacity: 0,
-    stroke: 'rgba(255,255,255,0.55)',
-    strokeWidth: '3px',
+    stroke: 'url(#hello-grad)',
+    strokeWidth: '2px',
     strokeLinecap: 'round',
     strokeLinejoin: 'round',
     paintOrder: 'stroke fill',
-    filter: 'drop-shadow(0 0 18px rgba(255,255,255,0.35))',
+    filter: 'drop-shadow(0 0 18px rgba(180, 79, 160, 0.4))',
   }
 
   // Same visual treatment as hello — thick semi-transparent stroke + glow
   const welcomeStyle = {
-    fontFamily: "'Quicksand', 'SF Pro Display', 'Helvetica Neue', Helvetica, sans-serif",
+    fontFamily: "'Dancing Script', cursive",
     fontSize: '130px',
-    fontWeight: 200,
+    fontWeight: 700,
     letterSpacing: '0.18em',
-    fill: 'rgba(255,255,255,0.92)',
+    fill: 'url(#welcome-grad)',
     fillOpacity: 0,
-    stroke: 'rgba(255,255,255,0.55)',
-    strokeWidth: '3px',
+    stroke: 'url(#welcome-grad)',
+    strokeWidth: '2px',
     strokeLinecap: 'round',
     strokeLinejoin: 'round',
     paintOrder: 'stroke fill',
-    filter: 'drop-shadow(0 0 18px rgba(255,255,255,0.35))',
+    filter: 'drop-shadow(0 0 18px rgba(123, 94, 199, 0.4))',
   }
 
   return (
@@ -152,6 +153,13 @@ export default function WelcomeFlow({ onComplete }) {
             style={{ width: 'min(88vw, 620px)', overflow: 'visible' }}
             aria-hidden="true"
           >
+            <defs>
+              <linearGradient id="hello-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%"   stopColor="#b44fa0" />
+                <stop offset="42%"  stopColor="#c93b72" />
+                <stop offset="100%" stopColor="#7b5ec7" />
+              </linearGradient>
+            </defs>
             <text ref={helloRef} x="340" y="158" textAnchor="middle" style={helloStyle}>
               hello
             </text>
@@ -167,6 +175,13 @@ export default function WelcomeFlow({ onComplete }) {
             style={{ width: 'min(92vw, 920px)', overflow: 'visible' }}
             aria-hidden="true"
           >
+            <defs>
+              <linearGradient id="welcome-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%"   stopColor="#b44fa0" />
+                <stop offset="42%"  stopColor="#c93b72" />
+                <stop offset="100%" stopColor="#7b5ec7" />
+              </linearGradient>
+            </defs>
             <text ref={welcomeRef} x="490" y="125" textAnchor="middle" style={welcomeStyle}>
               Welcome
             </text>
@@ -197,9 +212,8 @@ export default function WelcomeFlow({ onComplete }) {
             >
               <defs>
                 <linearGradient id="wf-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%"   stopColor="#b44fa0" />
-                  <stop offset="42%"  stopColor="#c93b72" />
-                  <stop offset="100%" stopColor="#7b5ec7" />
+                  <stop offset="0%"   stopColor="#ffffff" />
+<stop offset="100%" stopColor="#ffffff" />
                 </linearGradient>
               </defs>
               <path d="M 0,0 L 100,0 L 100,95 Q 50,100 0,95 Z" fill="url(#wf-grad)" />
@@ -210,9 +224,16 @@ export default function WelcomeFlow({ onComplete }) {
               style={{ width: 'min(92vw, 920px)', overflow: 'visible', position: 'relative' }}
               aria-hidden="true"
             >
+              <defs>
+                <linearGradient id="curtain-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%"   stopColor="#b44fa0" />
+                  <stop offset="42%"  stopColor="#c93b72" />
+                  <stop offset="100%" stopColor="#7b5ec7" />
+                </linearGradient>
+              </defs>
               <text
                 x="490" y="125" textAnchor="middle"
-                style={{ ...welcomeStyle, fillOpacity: 1, strokeOpacity: 0 }}
+                style={{ ...welcomeStyle, fill: 'url(#curtain-grad)', fillOpacity: 1, strokeOpacity: 0 }}
               >
                 Welcome
               </text>
