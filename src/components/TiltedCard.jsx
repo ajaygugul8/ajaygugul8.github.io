@@ -1,133 +1,133 @@
-import { useState, useRef, useEffect } from 'react'
-import { motion } from 'motion/react'
+import { useRef, useState } from 'react';
+import { motion, useMotionValue, useSpring } from 'motion/react';
+import './TiltedCard.css';
+
+const springValues = {
+  damping: 30,
+  stiffness: 100,
+  mass: 2
+};
 
 export default function TiltedCard({
   imageSrc,
-  altText,
-  captionText,
+  altText = 'Tilted card image',
+  captionText = '',
   containerHeight = '320px',
   containerWidth = '280px',
   imageHeight = '320px',
   imageWidth = '280px',
-  rotateAmplitude = 15,
   scaleOnHover = 1.05,
+  rotateAmplitude = 12,
   showMobileWarning = true,
   showTooltip = true,
-  displayOverlayContent = false,
   overlayContent = null,
-  className = '',
+  displayOverlayContent = false
 }) {
-  const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 })
-  const [isHovered, setIsHovered] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const cardRef = useRef(null)
+  const ref = useRef(null);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useSpring(useMotionValue(0), springValues);
+  const rotateY = useSpring(useMotionValue(0), springValues);
+  const scale = useSpring(1, springValues);
+  const opacity = useSpring(0, springValues);
+  const rotateFigcaption = useSpring(0, {
+    stiffness: 350,
+    damping: 30,
+    mass: 1
+  });
 
-  const handleMouseMove = (e) => {
-    if (isMobile) return
-    
-    const rect = cardRef.current?.getBoundingClientRect()
-    if (!rect) return
+  const [lastY, setLastY] = useState(0);
 
-    const x = (e.clientX - rect.left) / rect.width
-    const y = (e.clientY - rect.top) / rect.height
+  function handleMouse(e) {
+    if (!ref.current) return;
 
-    setMousePosition({ x, y })
+    const rect = ref.current.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left - rect.width / 2;
+    const offsetY = e.clientY - rect.top - rect.height / 2;
+
+    const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
+    const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude;
+
+    rotateX.set(rotationX);
+    rotateY.set(rotationY);
+
+    x.set(e.clientX - rect.left);
+    y.set(e.clientY - rect.top);
+
+    const velocityY = offsetY - lastY;
+    rotateFigcaption.set(-velocityY * 0.6);
+    setLastY(offsetY);
   }
 
-  const handleMouseEnter = () => {
-    setIsHovered(true)
+  function handleMouseEnter() {
+    scale.set(scaleOnHover);
+    opacity.set(1);
   }
 
-  const handleMouseLeave = () => {
-    setIsHovered(false)
-    setMousePosition({ x: 0.5, y: 0.5 })
+  function handleMouseLeave() {
+    opacity.set(0);
+    scale.set(1);
+    rotateX.set(0);
+    rotateY.set(0);
+    rotateFigcaption.set(0);
   }
-
-  const calculateRotation = () => {
-    if (isMobile || !isHovered) return { x: 0, y: 0 }
-
-    const rotateX = (mousePosition.y - 0.5) * rotateAmplitude
-    const rotateY = (mousePosition.x - 0.5) * -rotateAmplitude
-
-    return { x: rotateX, y: rotateY }
-  }
-
-  const rotation = calculateRotation()
 
   return (
-    <div className={`relative inline-block ${className}`}>
+    <figure
+      ref={ref}
+      className="tilted-card-figure"
+      style={{ height: containerHeight, width: containerWidth }}
+      onMouseMove={handleMouse}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {showMobileWarning && (
+        <div className="tilted-card-mobile-alert">This effect is not optimized for mobile. Check on desktop.</div>
+      )}
+
       <motion.div
-        ref={cardRef}
-        className={`relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 ${
-          isHovered 
-            ? 'shadow-[0_0_30px_rgba(163,102,255,0.4),0_0_60px_rgba(163,102,255,0.2)]' 
-            : 'shadow-2xl'
-        }`}
+        className="tilted-card-inner"
         style={{
-          height: containerHeight,
-          width: containerWidth,
-          transformStyle: 'preserve-3d',
-          transform: `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) scale(${isHovered ? scaleOnHover : 1})`,
-          transition: isHovered ? 'transform 0.1s ease-out, box-shadow 0.3s ease-out' : 'transform 0.3s ease-out, box-shadow 0.3s ease-out',
+          width: imageWidth,
+          height: imageHeight,
+          rotateX,
+          rotateY,
+          scale
         }}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
       >
-        {/* Image */}
-        <img
+        <motion.img
           src={imageSrc}
           alt={altText}
-          className="w-full h-full object-cover"
-          style={{
-            height: imageHeight,
-            width: imageWidth,
-          }}
+          className="tilted-card-img"
+          style={{ width: imageWidth, height: imageHeight }}
         />
 
-        {/* Overlay Content */}
         {displayOverlayContent && overlayContent && (
-          <div
-            className="absolute inset-0 flex items-end justify-center p-4"
+          <motion.div 
+            className="tilted-card-overlay"
             style={{
-              background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+              pointerEvents: 'none',
             }}
           >
             {overlayContent}
-          </div>
-        )}
-
-        {/* Tooltip */}
-        {showTooltip && isHovered && !isMobile && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute top-2 left-2 right-2 text-center"
-          >
-            <div className="inline-block px-2 py-1 text-xs text-white bg-black/70 backdrop-blur-sm rounded">
-              {captionText}
-            </div>
           </motion.div>
         )}
       </motion.div>
 
-      {/* Mobile Warning */}
-      {showMobileWarning && isMobile && (
-        <div className="absolute top-2 left-2 right-2 text-center">
-          <div className="inline-block px-2 py-1 text-xs text-white bg-black/70 backdrop-blur-sm rounded">
-            {captionText}
-          </div>
-        </div>
+      {showTooltip && (
+        <motion.figcaption
+          className="tilted-card-caption"
+          style={{ x, y, opacity, rotate: rotateFigcaption }}
+        >
+          {captionText}
+        </motion.figcaption>
       )}
-    </div>
-  )
+    </figure>
+  );
 }

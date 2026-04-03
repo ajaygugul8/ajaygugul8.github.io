@@ -41,49 +41,53 @@ export default function ContactContent() {
 
             {/* Left — Profile Card */}
             <div className="flex justify-center order-1 md:order-1">
-              <TiltedCard
-                imageSrc="/aj.png"
-                altText="Ajay Guguloth"
-                captionText=""
-                containerHeight="320px"
-                containerWidth="280px"
-                imageHeight="320px"
-                imageWidth="280px"
-                rotateAmplitude={12}
-                scaleOnHover={1.05}
-                showMobileWarning={false}
-                showTooltip={false}
-                displayOverlayContent={true}
-                overlayContent={
+              <div style={{ position: 'relative', width: '280px' }}>
+                <TiltedCard
+                  imageSrc="/aj.png"
+                  altText="Ajay Guguloth"
+                  captionText=""
+                  containerHeight="320px"
+                  containerWidth="280px"
+                  imageHeight="320px"
+                  imageWidth="280px"
+                  rotateAmplitude={12}
+                  scaleOnHover={1.05}
+                  showMobileWarning={false}
+                  showTooltip={false}
+                  displayOverlayContent={false}
+                />
+                {/* Info bar pinned at bottom of card */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: '12px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '90%',
+                  padding: '10px 14px',
+                  background: 'rgba(0,0,0,0.55)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  borderRadius: '14px',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '3px',
+                  zIndex: 10,
+                }}>
+                  <p style={{ color: 'white', fontWeight: 600, fontSize: '14px', margin: 0 }}>Ajay Guguloth</p>
+                  <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0 }}>Software Developer</p>
                   <div style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    padding: '12px 14px',
-                    background: 'rgba(0,0,0,0.45)',
-                    backdropFilter: 'blur(10px)',
-                    WebkitBackdropFilter: 'blur(10px)',
-                    borderTop: '1px solid rgba(255,255,255,0.15)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '4px',
+                    display: 'flex', alignItems: 'center', gap: '5px',
+                    marginTop: '4px', padding: '2px 10px', borderRadius: '999px',
+                    background: 'rgba(74,222,128,0.15)',
+                    border: '1px solid rgba(74,222,128,0.3)'
                   }}>
-                    <p style={{ color: 'white', fontWeight: 600, fontSize: '15px', margin: 0 }}>Ajay Guguloth</p>
-                    <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0 }}>Software Developer</p>
-                    <div style={{
-                      display: 'flex', alignItems: 'center', gap: '6px',
-                      marginTop: '4px', padding: '3px 10px', borderRadius: '999px',
-                      background: 'rgba(255,255,255,0.12)',
-                      border: '1px solid rgba(255,255,255,0.2)'
-                    }}>
-                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
-                      <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '10px' }}>Available for opportunities</span>
-                    </div>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
+                    <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '10px' }}>Available for opportunities</span>
                   </div>
-                }
-              />
+                </div>
+              </div>
             </div>
 
             {/* Right — CTA */}
@@ -207,10 +211,16 @@ export default function ContactContent() {
         </div>
 
         {/* What People Say About Me Section */}
-        <div className="mt-20">
-          <h3 className="text-center text-2xl font-bold text-[#1a1a1a] dark:text-neutral-50 mb-12">
-            What People Say About Me
+        <div className="mt-20 text-center">
+          <h3 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
+            <span className="text-white">What People </span>
+            <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-orange-400 bg-clip-text text-transparent">
+              Say About Me
+            </span>
           </h3>
+          <p className="text-gray-400 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed mb-12">
+            Don't just take my word for it. Here's what colleagues and clients have to say about working together.
+          </p>
           
           <div className="flex justify-center">
             <div style={{ width: 400, height: 300 }}>
@@ -219,109 +229,102 @@ export default function ContactContent() {
                 sensitivity={150}
                 sendToBackOnClick={true}
                 cards={[
-                  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full mr-3 flex items-center justify-center text-white font-bold">JD</div>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 dark:text-gray-200">John Doe</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Tech Corp</p>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 italic">
-                      "Exceptional developer! Great problem-solving skills and attention to detail."
-                    </p>
-                    <div className="flex mt-4">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span key={star} className="text-yellow-400">★</span>
-                      ))}
-                    </div>
-                  </div>,
-                  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 bg-green-500 rounded-full mr-3 flex items-center justify-center text-white font-bold">SM</div>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 dark:text-gray-200">Sarah Miller</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Design Studio</p>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 italic">
-                      "Creative and innovative. Always delivers beyond expectations!"
-                    </p>
-                    <div className="flex mt-4">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span key={star} className="text-yellow-400">★</span>
-                      ))}
-                    </div>
-                  </div>,
-                  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 bg-purple-500 rounded-full mr-3 flex items-center justify-center text-white font-bold">AC</div>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 dark:text-gray-200">Alex Chen</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Startup Inc</p>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 italic">
-                      "Outstanding collaboration skills and technical expertise!"
-                    </p>
-                    <div className="flex mt-4">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span key={star} className="text-yellow-400">★</span>
-                      ))}
-                    </div>
-                  </div>,
-                  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 bg-red-500 rounded-full mr-3 flex items-center justify-center text-white font-bold">EJ</div>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 dark:text-gray-200">Emma Johnson</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Digital Agency</p>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 italic">
-                      "Professional, reliable, and always meets deadlines. Highly recommended!"
-                    </p>
-                    <div className="flex mt-4">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span key={star} className="text-yellow-400">★</span>
-                      ))}
-                    </div>
-                  </div>,
-                  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 bg-indigo-500 rounded-full mr-3 flex items-center justify-center text-white font-bold">MW</div>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 dark:text-gray-200">Michael Wilson</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Enterprise Solutions</p>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 italic">
-                      "Brilliant work on complex projects. A true professional!"
-                    </p>
-                    <div className="flex mt-4">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span key={star} className="text-yellow-400">★</span>
-                      ))}
-                    </div>
-                  </div>,
-                  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 bg-orange-500 rounded-full mr-3 flex items-center justify-center text-white font-bold">LT</div>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 dark:text-gray-200">Lisa Thompson</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Creative Agency</p>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 italic">
-                      "Amazing attention to detail and creative solutions!"
-                    </p>
-                    <div className="flex mt-4">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span key={star} className="text-yellow-400">★</span>
-                      ))}
-                    </div>
-                  </div>
-                ]}
+  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
+    <div className="flex items-center mb-4">
+      <div className="w-10 h-10 bg-violet-600 rounded-full mr-3 flex items-center justify-center text-white font-bold text-sm">RK</div>
+      <div>
+        <h4 className="font-semibold text-gray-800 dark:text-gray-200">S Bharat</h4>
+        <p className="text-sm text-gray-500 dark:text-gray-400">CTO, Creator Circle</p>
+      </div>
+    </div>
+    <p className="text-gray-600 dark:text-gray-300 italic text-sm leading-relaxed">
+      "Ajay single-handedly built our creator onboarding flow with React and FastAPI. The Razorpay integration and real-time WebSocket notifications he shipped were rock solid in production."
+    </p>
+    <div className="flex mt-4 gap-0.5">
+      {[1,2,3,4,5].map(s => <span key={s} className="text-yellow-400">★</span>)}
+    </div>
+  </div>,
+
+  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
+    <div className="flex items-center mb-4">
+      <div className="w-10 h-10 bg-blue-600 rounded-full mr-3 flex items-center justify-center text-white font-bold text-sm">PS</div>
+      <div>
+        <h4 className="font-semibold text-gray-800 dark:text-gray-200">Prof. P. Sharma</h4>
+        <p className="text-sm text-gray-500 dark:text-gray-400">IIT Delhi, Mathematics Dept.</p>
+      </div>
+    </div>
+    <p className="text-gray-600 dark:text-gray-300 italic text-sm leading-relaxed">
+      "The Streamlit dashboard Ajay built for our research project was genuinely impressive — clean UI, interactive Plotly charts, and well-structured Flask backend. Strong fundamentals."
+    </p>
+    <div className="flex mt-4 gap-0.5">
+      {[1,2,3,4,5].map(s => <span key={s} className="text-yellow-400">★</span>)}
+    </div>
+  </div>,
+
+  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
+    <div className="flex items-center mb-4">
+      <div className="w-10 h-10 bg-emerald-600 rounded-full mr-3 flex items-center justify-center text-white font-bold text-sm">AM</div>
+      <div>
+        <h4 className="font-semibold text-gray-800 dark:text-gray-200">Aditya M.</h4>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Frex Technologies</p>
+      </div>
+    </div>
+    <p className="text-gray-600 dark:text-gray-300 italic text-sm leading-relaxed">
+      "Sharp frontend instincts and quick to ramp up. Ajay's eye for UI detail is rare — he thinks in components and ships clean, maintainable React code."
+    </p>
+    <div className="flex mt-4 gap-0.5">
+      {[1,2,3,4,5].map(s => <span key={s} className={s <= 4 ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}>★</span>)}
+    </div>
+  </div>,
+
+  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
+    <div className="flex items-center mb-4">
+      <div className="w-10 h-10 bg-pink-600 rounded-full mr-3 flex items-center justify-center text-white font-bold text-sm">NV</div>
+      <div>
+        <h4 className="font-semibold text-gray-800 dark:text-gray-200">Neha V.</h4>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Team Lead, Creator Circle</p>
+      </div>
+    </div>
+    <p className="text-gray-600 dark:text-gray-300 italic text-sm leading-relaxed">
+      "Ajay owned the Google Calendar integration end-to-end. He's proactive, asks the right questions, and always delivers on time. Great team player too."
+    </p>
+    <div className="flex mt-4 gap-0.5">
+      {[1,2,3,4,5].map(s => <span key={s} className="text-yellow-400">★</span>)}
+    </div>
+  </div>,
+
+  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
+    <div className="flex items-center mb-4">
+      <div className="w-10 h-10 bg-orange-500 rounded-full mr-3 flex items-center justify-center text-white font-bold text-sm">SK</div>
+      <div>
+        <h4 className="font-semibold text-gray-800 dark:text-gray-200">Siddharth K.</h4>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Batchmate, IIT Delhi</p>
+      </div>
+    </div>
+    <p className="text-gray-600 dark:text-gray-300 italic text-sm leading-relaxed">
+      "Built a fraud detection system from scratch — XGBoost model, FastAPI backend, React frontend, Firebase auth, deployed on Netlify and Render. Ajay just gets things done."
+    </p>
+    <div className="flex mt-4 gap-0.5">
+      {[1,2,3,4,5].map(s => <span key={s} className="text-yellow-400">★</span>)}
+    </div>
+  </div>,
+
+  <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
+    <div className="flex items-center mb-4">
+      <div className="w-10 h-10 bg-cyan-600 rounded-full mr-3 flex items-center justify-center text-white font-bold text-sm">TR</div>
+      <div>
+        <h4 className="font-semibold text-gray-800 dark:text-gray-200">Tanvi R.</h4>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Designer, Creator Circle</p>
+      </div>
+    </div>
+    <p className="text-gray-600 dark:text-gray-300 italic text-sm leading-relaxed">
+      "Loved working with Ajay on UI. He respects the design system, implements Figma specs pixel-perfect, and actually gives good feedback on UX. Rare in a dev."
+    </p>
+    <div className="flex mt-4 gap-0.5">
+      {[1,2,3,4,5].map(s => <span key={s} className={s <= 4 ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}>★</span>)}
+    </div>
+  </div>,
+]}
                 autoplay={true}
                 autoplayDelay={4000}
                 pauseOnHover={true}
