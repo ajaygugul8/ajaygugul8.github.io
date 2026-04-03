@@ -10,7 +10,7 @@ import { NAV_LINKS } from '../config/nav'
 import Magnet from './Magnet'
 import { preloadComponent } from './navViews'
 
-function GoogleMark({ className }) {
+const GoogleMark = memo(({ className }) => {
   return (
     <svg
       className={className}
@@ -35,7 +35,7 @@ function GoogleMark({ className }) {
       />
     </svg>
   )
-}
+})
 
 function runGoogleSearch(query) {
   const q = query.trim()
@@ -62,6 +62,7 @@ export default memo(function Navbar({ activeNav, onNavChange }) {
 
   const searchPopoverRef = useRef(null)
   const searchInputRef = useRef(null)
+  const mainContentRef = useRef(null)
 
   const navButtonClassMemo = useCallback((isActive, layout) => {
     const base =
@@ -76,22 +77,24 @@ export default memo(function Navbar({ activeNav, onNavChange }) {
     return `${base} text-[#555555] hover:text-[#333333] dark:border dark:border-[#3f3f3f] dark:bg-[#252525] dark:text-white dark:hover:border-[#505050] dark:hover:bg-[#2a2a2a]`
   }, [])
 
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    mainContentRef.current?.focus({ preventScroll: true })
+  }, [])
+
   const goHome = useCallback((e) => {
     e.preventDefault()
     onNavChange('Home')
     setMenuOpen(false)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    const main = document.getElementById('main-content')
-    main?.focus({ preventScroll: true })
-  }, [onNavChange])
+    scrollToTop()
+  }, [onNavChange, scrollToTop])
 
   const activateNav = useCallback((label) => {
     onNavChange(label)
     if (label === 'Home') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      document.getElementById('main-content')?.focus({ preventScroll: true })
+      scrollToTop()
     }
-  }, [onNavChange])
+  }, [onNavChange, scrollToTop])
 
   const preloadNav = useCallback((label) => {
     preloadComponent(label)
@@ -122,23 +125,41 @@ export default memo(function Navbar({ activeNav, onNavChange }) {
     setMenuOpen(false)
   }, [activateNav])
 
-  useEffect(() => {
-    if (!searchOpen) return
+  // Memoized nav links to prevent unnecessary re-renders
+  const navLinks = useMemo(() => NAV_LINKS.map((label) => {
+    const isActive = activeNav === label
+    return (
+      <li key={label} className="shrink-0">
+        <Magnet padding={50} magnetStrength={50}>
+          <button
+            type="button"
+            onClick={() => activateNav(label)}
+            onMouseEnter={() => preloadNav(label)}
+            className={navButtonClassMemo(isActive, 'bar')}
+          >
+            {label}
+          </button>
+        </Magnet>
+      </li>
+    )
+  }), [activeNav, activateNav, preloadNav, navButtonClassMemo])
 
-    const onPointerDown = (e) => {
-      if (
-        searchPopoverRef.current &&
-        !searchPopoverRef.current.contains(e.target)
-      ) {
-        setSearchOpen(false)
-      }
-    }
-
-    document.addEventListener('mousedown', onPointerDown)
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown)
-    }
-  }, [searchOpen])
+  // Memoized mobile nav links
+  const mobileNavLinks = useMemo(() => NAV_LINKS.map((label) => {
+    const isActive = activeNav === label
+    return (
+      <li key={label}>
+        <button
+          type="button"
+          onClick={() => selectNav(label)}
+          onTouchEnd={(e) => { e.preventDefault(); selectNav(label) }}
+          className={navButtonClassMemo(isActive, 'drawer')}
+        >
+          {label}
+        </button>
+      </li>
+    )
+  }), [activeNav, selectNav, navButtonClassMemo])
 
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -218,23 +239,7 @@ export default memo(function Navbar({ activeNav, onNavChange }) {
 
         {/* Desktop nav links */}
         <ul className="relative z-10 hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-x-auto py-1 md:flex md:gap-1.5 lg:gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {NAV_LINKS.map((label) => {
-            const isActive = activeNav === label
-            return (
-              <li key={label} className="shrink-0">
-                <Magnet padding={50} magnetStrength={50}>
-                  <button
-                    type="button"
-                    onClick={() => activateNav(label)}
-                    onMouseEnter={() => preloadNav(label)}
-                    className={navButtonClassMemo(isActive, 'bar')}
-                  >
-                    {label}
-                  </button>
-                </Magnet>
-              </li>
-            )
-          })}
+          {navLinks}
         </ul>
 
         {/* Utilities */}
@@ -349,21 +354,7 @@ export default memo(function Navbar({ activeNav, onNavChange }) {
 
           <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Mobile">
             <ul className="flex flex-col gap-1.5">
-              {NAV_LINKS.map((label) => {
-                const isActive = activeNav === label
-                return (
-                  <li key={label}>
-                    <button
-                      type="button"
-                      onClick={() => selectNav(label)}
-                      onTouchEnd={(e) => { e.preventDefault(); selectNav(label) }}
-                      className={navButtonClassMemo(isActive, 'drawer')}
-                    >
-                      {label}
-                    </button>
-                  </li>
-                )
-              })}
+              {mobileNavLinks}
             </ul>
           </nav>
         </aside>
