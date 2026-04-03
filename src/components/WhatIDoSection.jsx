@@ -1,5 +1,5 @@
 import { Zap } from 'lucide-react'
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 
 function TechChips({ items }) {
   return (
@@ -48,11 +48,12 @@ function Panel({ title, techs, bullets }) {
 function IllustrationFullStack() {
   return (
     <div className="flex items-center justify-center" aria-hidden>
-      <DotLottieReact
-        src="/fsd.lottie"
-        loop
-        autoplay
-        style={{ width: '100%', height: '360px' }}
+      <DotLottieReact 
+        src="/fsd.lottie" 
+        loop 
+        autoplay 
+        renderConfig={{ devicePixelRatio: 1 }}
+        style={{ width: '100%', height: '360px' }} 
       />
     </div>
   );
@@ -61,11 +62,12 @@ function IllustrationFullStack() {
 function IllustrationGenAI() {
   return (
     <div className="flex items-center justify-center" aria-hidden>
-      <DotLottieReact
-        src="/AI.lottie"
-        loop
-        autoplay
-        style={{ width: '100%', height: '360px' }}
+      <DotLottieReact 
+        src="/AI.lottie" 
+        loop 
+        autoplay 
+        renderConfig={{ devicePixelRatio: 1 }}
+        style={{ width: '100%', height: '360px' }} 
       />
     </div>
   );
@@ -74,11 +76,12 @@ function IllustrationGenAI() {
 function IllustrationCloud() {
   return (
     <div className="flex items-center justify-center" aria-hidden>
-      <DotLottieReact
-        src="/cloud.lottie"
-        loop
-        autoplay
-        style={{ width: '100%', height: '360px' }}
+      <DotLottieReact 
+        src="/cloud.lottie" 
+        loop 
+        autoplay 
+        renderConfig={{ devicePixelRatio: 1 }}
+        style={{ width: '100%', height: '360px' }} 
       />
     </div>
   );

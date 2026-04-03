@@ -6,4 +6,25 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   base: '/',
   plugins: [react(), tailwindcss()],
+  server: {
+    fs: {
+      allow: ['..']
+    }
+  },
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      if (req.url && req.url.endsWith('.lottie')) {
+        res.setHeader('Content-Type', 'application/json')
+      }
+      next()
+    })
+  },
+  configurePreviewServer(server) {
+    server.middlewares.use((req, res, next) => {
+      if (req.url && req.url.endsWith('.lottie')) {
+        res.setHeader('Content-Type', 'application/json')
+      }
+      next()
+    })
+  }
 })

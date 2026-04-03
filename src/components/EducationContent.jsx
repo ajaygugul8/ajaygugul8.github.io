@@ -1,6 +1,6 @@
 import { GraduationCap, Zap } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 
 const IIT_WEBSITE = 'https://www.iitd.ac.in'
 
@@ -205,12 +205,12 @@ export default function EducationContent() {
 
             {/* Lottie Animation — left */}
             <div className="flex-1 flex items-center justify-center" aria-hidden>
-              <DotLottieReact
-                src="/edu.lottie"
-                loop
-                autoplay
+              <DotLottieReact 
+                src="/edu.lottie" 
+                loop 
+                autoplay 
                 renderConfig={{ devicePixelRatio: 1 }}
-                style={{ width: '100%', height: '320px' }}
+                style={{ width: '100%', height: '320px' }} 
               />
             </div>
 

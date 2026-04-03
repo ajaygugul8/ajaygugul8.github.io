@@ -316,7 +316,6 @@ export default memo(function Navbar({ activeNav, onNavChange }) {
       {/* Mobile drawer: slides from left */}
       <div
         className={`fixed inset-0 z-[70] md:hidden ${menuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
-        aria-hidden={!menuOpen}
         inert={!menuOpen ? true : undefined}
       >
         <button

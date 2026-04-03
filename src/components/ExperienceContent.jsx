@@ -7,9 +7,10 @@ function ExperienceHeroArt() {
   return (
     <div className="flex-1 flex items-center justify-center" aria-hidden>
       <DotLottieReact
-        src="/Software Developer.lottie"
+        src="/software-developer.lottie"
         loop
         autoplay
+        renderConfig={{ devicePixelRatio: 1 }}
         style={{ width: '100%', height: '320px' }}
       />
     </div>

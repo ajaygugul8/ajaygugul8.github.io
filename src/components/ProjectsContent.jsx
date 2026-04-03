@@ -1,7 +1,7 @@
 import { ExternalLink, Github, ChevronDown, ChevronUp } from 'lucide-react'
 import Magnet from './Magnet'
 import { useState, useEffect } from 'react'
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import {
   SiReact,
   SiVite,
@@ -29,12 +29,12 @@ const PAGE_SIZE = 4
 function ProjectsHeroArt() {
   return (
     <div className="flex-1 flex items-center justify-center" aria-hidden>
-      <DotLottieReact
-        src="/projects.lottie"
-        loop
-        autoplay
+      <DotLottieReact 
+        src="/projects.lottie" 
+        loop 
+        autoplay 
         renderConfig={{ devicePixelRatio: 1 }}
-        style={{ width: '100%', height: '320px' }}
+        style={{ width: '100%', height: '320px' }} 
       />
     </div>
   );

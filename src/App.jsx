@@ -14,9 +14,8 @@ function LoadingSpinner() {
 }
 
 function readOnboardingDone() {
-  if (typeof localStorage === 'undefined') return false
   try {
-    return localStorage.getItem(PORTFOLIO_ONBOARDING_KEY) === '1'
+    return sessionStorage.getItem(PORTFOLIO_ONBOARDING_KEY) === '1'
   } catch {
     return false
   }
@@ -37,7 +36,6 @@ function App() {
     const handleHashChange = () => {
       setActiveNav(getActiveNavFromURL())
     }
-
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
