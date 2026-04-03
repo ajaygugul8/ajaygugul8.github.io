@@ -2,6 +2,7 @@ import Stack from './Stack'
 import FindMeHere from './FindMeHere'
 import { useEffect } from 'react'
 import TextType from './TextType'
+import TiltedCard from './TiltedCard'
 
 export default function ContactContent() {
   useEffect(() => {
@@ -40,38 +41,49 @@ export default function ContactContent() {
 
             {/* Left — Profile Card */}
             <div className="flex justify-center order-1 md:order-1">
-              <div className="relative w-56 sm:w-64 md:w-72 h-80 sm:h-88 md:h-96 rounded-2xl sm:rounded-3xl overflow-hidden border border-neutral-200 dark:border-blue-900/30 bg-white dark:bg-gradient-to-br dark:from-[#1a1f3a] dark:to-[#0f1228] shadow-xl sm:shadow-2xl transition-all duration-300 ease-in-out group hover:rotate-1 sm:hover:rotate-3 hover:scale-105">
-                
-                {/* Avatar Background */}
-                <div className="absolute inset-0">
-                  <img
-                    src="/aj.png"
-                    alt="Ajay Guguloth"
-                    className="w-full h-full object-cover object-top"
-                    style={{ mixBlendMode: 'normal', opacity: 1 }}
-                  />
-                </div>
-
-                {/* Bottom info */}
-                <div className="absolute bottom-0 left-0 right-0 px-5 py-5"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.15)',
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+              <TiltedCard
+                imageSrc="/aj.png"
+                altText="Ajay Guguloth"
+                captionText=""
+                containerHeight="320px"
+                containerWidth="280px"
+                imageHeight="320px"
+                imageWidth="280px"
+                rotateAmplitude={12}
+                scaleOnHover={1.05}
+                showMobileWarning={false}
+                showTooltip={false}
+                displayOverlayContent={true}
+                overlayContent={
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    padding: '12px 14px',
+                    background: 'rgba(0,0,0,0.45)',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    borderTop: '1px solid rgba(255,255,255,0.15)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '4px',
                   }}>
-                  <p className="text-white font-semibold text-lg text-center">Ajay Guguloth</p>
-                  <p className="text-white/70 text-xs uppercase tracking-widest text-center mt-1">Software Developer</p>
-                  <div className="flex items-center justify-center gap-2 mt-3 px-3 py-1.5 rounded-full mx-auto w-fit"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.15)',
-                      border: '1px solid rgba(255, 255, 255, 0.25)',
+                    <p style={{ color: 'white', fontWeight: 600, fontSize: '15px', margin: 0 }}>Ajay Guguloth</p>
+                    <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0 }}>Software Developer</p>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '6px',
+                      marginTop: '4px', padding: '3px 10px', borderRadius: '999px',
+                      background: 'rgba(255,255,255,0.12)',
+                      border: '1px solid rgba(255,255,255,0.2)'
                     }}>
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse block" />
-                    <span className="text-white/85 text-[11px]">Available for opportunities</span>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
+                      <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '10px' }}>Available for opportunities</span>
+                    </div>
                   </div>
-                </div>
-              </div>
+                }
+              />
             </div>
 
             {/* Right — CTA */}

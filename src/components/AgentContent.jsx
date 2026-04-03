@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import Galaxy from './Galaxy'
 
 function ChittiIcon({ size = 28 }) {
   return (
@@ -43,6 +44,7 @@ export default function Agent() {
   const [activeBtn, setActiveBtn] = useState(null)
   const [tooltip, setTooltip]     = useState(false)
   const [isMobile, setIsMobile]   = useState(false)
+  const [galaxyEnabled, setGalaxyEnabled] = useState(true)
   const popupRef                  = useRef(null)
 
   // Detect mobile
@@ -93,7 +95,26 @@ export default function Agent() {
   const handleAction = (id) => setActiveBtn((prev) => prev === id ? null : id)
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] dark:bg-neutral-950 text-[#1a1a1a] dark:text-white">
+    <div className="min-h-screen bg-[#faf9f6] dark:bg-neutral-950 text-[#1a1a1a] dark:text-white relative">
+      {/* Galaxy Background */}
+      {galaxyEnabled && (
+        <div className="fixed inset-0 z-0">
+          <Galaxy 
+            mouseRepulsion
+            mouseInteraction
+            density={0.8}
+            glowIntensity={0.15}
+            saturation={0.2}
+            hueShift={280}
+            twinkleIntensity={0.2}
+            rotationSpeed={0.05}
+            repulsionStrength={1.5}
+            autoCenterRepulsion={0}
+            starSpeed={0.3}
+            speed={0.8}
+          />
+        </div>
+      )}
 
       {/* ── Mobile backdrop dim ── */}
       <AnimatePresence>
@@ -289,6 +310,45 @@ export default function Agent() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Galaxy Toggle Button */}
+      <motion.button
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.93 }}
+        onClick={() => setGalaxyEnabled(!galaxyEnabled)}
+        className={`fixed bottom-6 right-4 sm:right-6 z-[100] flex items-center gap-2 px-3 py-2 rounded-full
+          backdrop-blur-xl border transition-all duration-200 touch-manipulation
+          ${galaxyEnabled 
+            ? 'bg-white/80 dark:bg-neutral-800/80 border-[#A366FF]/50 shadow-[0_0_20px_rgba(163,102,255,0.4),0_0_40px_rgba(163,102,255,0.2)] hover:shadow-[0_0_25px_rgba(163,102,255,0.6),0_0_50px_rgba(163,102,255,0.3)]' 
+            : 'bg-white/80 dark:bg-neutral-800/80 border-white/40 dark:border-white/10 shadow-lg hover:shadow-xl'
+          }
+          text-[#1a1a1a] dark:text-white`}
+        aria-label={galaxyEnabled ? 'Disable galaxy' : 'Enable galaxy'}
+      >
+        {galaxyEnabled ? (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/>
+            </svg>
+            <span className="text-xs font-medium hidden sm:inline">Hide Galaxy</span>
+          </>
+        ) : (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <span className="text-xs font-medium hidden sm:inline">Show Galaxy</span>
+          </>
+        )}
+      </motion.button>
     </div>
   )
 }
