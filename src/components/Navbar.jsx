@@ -66,7 +66,7 @@ export default memo(function Navbar({ activeNav, onNavChange }) {
   const navButtonClassMemo = useCallback((isActive, layout) => {
     const base =
       layout === 'drawer'
-        ? 'w-full rounded-lg px-4 py-3 text-left text-base font-medium transition-[box-shadow,background-color,color]'
+        ? 'w-full rounded-lg px-4 py-3 text-left text-base font-medium transition-[box-shadow,background-color,color] touch-manipulation'
         : 'rounded-lg px-3 py-2 text-sm font-medium transition-[box-shadow,background-color,color] md:px-3.5 dark:rounded-xl'
 
     if (isActive) {
@@ -353,16 +353,14 @@ export default memo(function Navbar({ activeNav, onNavChange }) {
                 const isActive = activeNav === label
                 return (
                   <li key={label}>
-                    <Magnet padding={50} magnetStrength={50}>
-                      <button
-                        type="button"
-                        onClick={() => selectNav(label)}
-                        onMouseEnter={() => preloadNav(label)}
-                        className={navButtonClassMemo(isActive, 'drawer')}
-                      >
-                        {label}
-                      </button>
-                    </Magnet>
+                    <button
+                      type="button"
+                      onClick={() => selectNav(label)}
+                      onTouchEnd={(e) => { e.preventDefault(); selectNav(label) }}
+                      className={navButtonClassMemo(isActive, 'drawer')}
+                    >
+                      {label}
+                    </button>
                   </li>
                 )
               })}
