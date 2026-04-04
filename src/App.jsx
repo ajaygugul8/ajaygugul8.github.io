@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import { NAV_VIEWS } from './components/navViews'
-const WelcomeFlow = lazy(() => import('./components/WelcomeFlow'))
+import WelcomeFlow from './components/WelcomeFlow'        // ← was: lazy(() => import(...))
 import { PORTFOLIO_ONBOARDING_KEY } from './components/onboardingKey'
 
 function LoadingSpinner() {
@@ -54,11 +54,8 @@ function App() {
 
   return (
     <div className="min-h-svh bg-[#fff9f5] dark:bg-neutral-950 flex flex-col">
-      {/* ✅ WelcomeFlow overlays on top — homepage always renders beneath it */}
-      {!onboardingDone && (
-        <Suspense fallback={null}>
-          <WelcomeFlow onComplete={() => setOnboardingDone(true)} />
-        </Suspense>
+      {!onboardingDone && (                             // ← was: wrapped in <Suspense fallback={null}>
+        <WelcomeFlow onComplete={() => setOnboardingDone(true)} />
       )}
 
       <Navbar activeNav={activeNav} onNavChange={handleNavChange} />
