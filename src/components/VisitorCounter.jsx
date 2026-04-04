@@ -65,7 +65,10 @@ export default function VisitorCounter() {
         setVisitorCount(val) // triggers animation since isFreshLoad.current = true
       }
 
-      if (!sessionStorage.getItem('visitor_counted')) {
+      const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+      const alreadyCounted = sessionStorage.getItem('visitor_counted')
+
+      if (!alreadyCounted && !isLocal) {
         sessionStorage.setItem('visitor_counted', '1')
         await setDoc(ref, { total: increment(1) }, { merge: true })
         const updated = await getDoc(ref)

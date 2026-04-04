@@ -39,13 +39,13 @@ const ACTION_BUTTONS = [
 ]
 
 export default function Agent() {
-  const [open, setOpen]           = useState(false)
-  const [listening, setListening] = useState(false)
-  const [activeBtn, setActiveBtn] = useState(null)
-  const [tooltip, setTooltip]     = useState(false)
-  const [isMobile, setIsMobile]   = useState(false)
-  const [galaxyEnabled, setGalaxyEnabled] = useState(true)
-  const popupRef                  = useRef(null)
+  const [open, setOpen]                   = useState(false)
+  const [listening, setListening]         = useState(false)
+  const [activeBtn, setActiveBtn]         = useState(null)
+  const [tooltip, setTooltip]             = useState(false)
+  const [isMobile, setIsMobile]           = useState(false)
+  const [galaxyEnabled, setGalaxyEnabled] = useState(false)  // ← disabled by default
+  const popupRef                          = useRef(null)
 
   // Detect mobile
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function Agent() {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // Close on outside click
+  // Close popup on outside click
   useEffect(() => {
     if (!open) return
     const handler = (e) => {
@@ -81,7 +81,7 @@ export default function Agent() {
     return () => document.removeEventListener('keydown', handler)
   }, [])
 
-  // Lock body scroll on mobile when open
+  // Lock body scroll on mobile when popup open
   useEffect(() => {
     if (isMobile && open) {
       document.body.style.overflow = 'hidden'
@@ -91,20 +91,22 @@ export default function Agent() {
     return () => { document.body.style.overflow = '' }
   }, [isMobile, open])
 
-  const toggleMic = () => setListening((l) => !l)
+  const toggleMic    = () => setListening((l) => !l)
   const handleAction = (id) => setActiveBtn((prev) => prev === id ? null : id)
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] dark:bg-neutral-950 text-[#1a1a1a] dark:text-white relative">
-      {/* Galaxy Background */}
+    <div className="min-h-screen text-[#1a1a1a] dark:text-white relative">
+
+      {/* Galaxy Background — only when enabled, transparent so page bg shows in light mode */}
       {galaxyEnabled && (
-        <div className="fixed inset-0 z-0">
-          <Galaxy 
+        <div className="fixed inset-0 z-0 dark:bg-neutral-950">
+          <Galaxy
+            transparent={true}
             mouseRepulsion
             mouseInteraction
             density={0.8}
-            glowIntensity={0.15}
-            saturation={0.2}
+            glowIntensity={0.3}
+            saturation={0.4}
             hueShift={280}
             twinkleIntensity={0.2}
             rotationSpeed={0.05}
@@ -116,7 +118,7 @@ export default function Agent() {
         </div>
       )}
 
-      {/* ── Mobile backdrop dim ── */}
+      {/* Mobile backdrop dim when popup open */}
       <AnimatePresence>
         {open && isMobile && (
           <motion.div
@@ -130,7 +132,7 @@ export default function Agent() {
         )}
       </AnimatePresence>
 
-      {/* ── Fixed bottom-left Chitti button ── */}
+      {/* Fixed bottom-left Chitti FAB */}
       <div className="fixed bottom-6 left-4 sm:left-6 z-[100] flex flex-col items-start gap-2">
 
         {/* Tooltip — desktop only */}
@@ -152,7 +154,7 @@ export default function Agent() {
           )}
         </AnimatePresence>
 
-        {/* Chitti FAB */}
+        {/* Chitti button */}
         <motion.button
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.93 }}
@@ -161,8 +163,7 @@ export default function Agent() {
           onMouseLeave={() => setTooltip(false)}
           aria-label="Open Chitti"
           className="relative flex items-center justify-center
-            w-12 h-12 sm:w-14 sm:h-14
-            rounded-2xl
+            w-12 h-12 sm:w-14 sm:h-14 rounded-2xl
             bg-gradient-to-br from-[#A366FF] to-[#7c3aed]
             shadow-[0_4px_24px_rgba(163,102,255,0.55)]
             text-white border border-white/20
@@ -177,7 +178,7 @@ export default function Agent() {
         </motion.button>
       </div>
 
-      {/* ── Glassmorphism Popup ── */}
+      {/* Glassmorphism Popup */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -187,16 +188,13 @@ export default function Agent() {
             exit={{ opacity: 0, y: 16, scale: 0.94 }}
             transition={{ type: 'spring', stiffness: 380, damping: 30 }}
             className={`
-              fixed z-[99]
-              rounded-3xl overflow-hidden
+              fixed z-[99] rounded-3xl overflow-hidden
               bg-white/30 dark:bg-neutral-900/50
               backdrop-blur-2xl
               border border-white/50 dark:border-white/10
               shadow-[0_8px_48px_rgba(0,0,0,0.22),0_1.5px_0_rgba(255,255,255,0.25)_inset]
               ${isMobile
-                /* mobile: centered above FAB, full-width with margin */
                 ? 'bottom-[4.5rem] left-3 right-3 w-auto'
-                /* desktop: anchored bottom-left above FAB */
                 : 'bottom-24 left-6 w-[17rem]'
               }
             `}
@@ -222,7 +220,6 @@ export default function Agent() {
                     }`}>
                     {listening ? '● Listening' : '○ Ready'}
                   </span>
-                  {/* Close button on mobile */}
                   {isMobile && (
                     <button
                       onClick={() => { setOpen(false); setListening(false) }}
@@ -239,15 +236,15 @@ export default function Agent() {
                 </div>
               </div>
 
-              {/* Central Mic Button */}
+              {/* Mic Button */}
               <div className="flex flex-col items-center gap-2">
                 <motion.button
                   whileHover={{ scale: 1.06 }}
                   whileTap={{ scale: 0.93 }}
                   onClick={toggleMic}
                   className={`relative flex items-center justify-center
-                    w-16 h-16 sm:w-20 sm:h-20
-                    rounded-full transition-all duration-300
+                    w-16 h-16 sm:w-20 sm:h-20 rounded-full
+                    transition-all duration-300
                     ${listening
                       ? 'bg-gradient-to-br from-red-500 to-rose-600 shadow-[0_0_32px_rgba(239,68,68,0.6)]'
                       : 'bg-gradient-to-br from-[#A366FF] to-[#7c3aed] shadow-[0_0_24px_rgba(163,102,255,0.45)]'
@@ -276,7 +273,7 @@ export default function Agent() {
                 </p>
               </div>
 
-              {/* 4 Action Buttons — 2×2 grid, full width on mobile */}
+              {/* 4 Action Buttons */}
               <div className="grid grid-cols-2 gap-2">
                 {ACTION_BUTTONS.map((btn, i) => (
                   <motion.button
@@ -288,7 +285,7 @@ export default function Agent() {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleAction(btn.id)}
                     className={`flex flex-col items-center justify-center gap-0.5
-                      px-2 py-3 sm:py-3 rounded-2xl text-center
+                      px-2 py-3 rounded-2xl text-center
                       border transition-all duration-200 touch-manipulation
                       ${activeBtn === btn.id
                         ? 'bg-[#A366FF]/20 border-[#A366FF]/50 shadow-[0_0_12px_rgba(163,102,255,0.25)]'
@@ -296,7 +293,7 @@ export default function Agent() {
                       }`}
                   >
                     <span className="text-base leading-none">{btn.emoji}</span>
-                    <span className="text-[11px] sm:text-[11px] font-semibold text-[#1a1a1a] dark:text-white leading-tight">
+                    <span className="text-[11px] font-semibold text-[#1a1a1a] dark:text-white leading-tight">
                       {btn.label}
                     </span>
                     <span className="text-[9px] text-[#777] dark:text-white/40 leading-tight">
@@ -311,15 +308,16 @@ export default function Agent() {
         )}
       </AnimatePresence>
 
-      {/* Galaxy Toggle Button */}
+      {/* Galaxy Toggle Button — bottom right */}
       <motion.button
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.93 }}
-        onClick={() => setGalaxyEnabled(!galaxyEnabled)}
-        className={`fixed bottom-6 right-4 sm:right-6 z-[100] flex items-center gap-2 px-3 py-2 rounded-full
+        onClick={() => setGalaxyEnabled((g) => !g)}
+        className={`fixed bottom-6 right-4 sm:right-6 z-[100]
+          flex items-center gap-2 px-3 py-2 rounded-full
           backdrop-blur-xl border transition-all duration-200 touch-manipulation
-          ${galaxyEnabled 
-            ? 'bg-white/80 dark:bg-neutral-800/80 border-[#A366FF]/50 shadow-[0_0_20px_rgba(163,102,255,0.4),0_0_40px_rgba(163,102,255,0.2)] hover:shadow-[0_0_25px_rgba(163,102,255,0.6),0_0_50px_rgba(163,102,255,0.3)]' 
+          ${galaxyEnabled
+            ? 'bg-white/80 dark:bg-neutral-800/80 border-[#A366FF]/50 shadow-[0_0_20px_rgba(163,102,255,0.4),0_0_40px_rgba(163,102,255,0.2)] hover:shadow-[0_0_25px_rgba(163,102,255,0.6),0_0_50px_rgba(163,102,255,0.3)]'
             : 'bg-white/80 dark:bg-neutral-800/80 border-white/40 dark:border-white/10 shadow-lg hover:shadow-xl'
           }
           text-[#1a1a1a] dark:text-white`}
@@ -349,6 +347,7 @@ export default function Agent() {
           </>
         )}
       </motion.button>
+
     </div>
   )
 }
