@@ -206,7 +206,7 @@ export default function EducationContent() {
             {/* Lottie Animation — left */}
             <div className="flex-1 flex items-center justify-center" aria-hidden>
               <DotLottieReact 
-                src="/edu.lottie" 
+                src="/graduation-hat.lottie" 
                 loop 
                 autoplay 
                 renderConfig={{ devicePixelRatio: 1 }}
