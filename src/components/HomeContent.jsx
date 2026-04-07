@@ -14,7 +14,7 @@ const ROLES = [
 ]
 
 const TYPING_SPEED   = 75
-const DELETING_SPEED = 50
+const DELETING_SPEED = 30
 const PAUSE_DURATION = 2000
 
 function useDocumentDarkClass() {
